@@ -149,3 +149,12 @@ export function Hero() {
     </section>
   );
 }
+
+function Metric({ children, label }: { children: ReactNode; label: string }) {
+  return (
+    <div>
+      <div className="font-display text-2xl font-semibold text-foreground md:text-3xl">{children}</div>
+      <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
+    </div>
+  );
+}
