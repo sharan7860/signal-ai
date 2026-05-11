@@ -163,6 +163,11 @@
       radial-gradient(ellipse 60% 50% at 100% 50%, oklch(0.3 0.18 280 / 0.12), transparent);
   }
 
+  @media (min-width: 768px) {
+    html, body { cursor: none; }
+    a, button, [role="button"], input, textarea { cursor: none; }
+  }
+
   ::selection {
     background: oklch(0.7 0.18 245 / 0.35);
     color: oklch(0.98 0.01 240);
@@ -183,6 +188,27 @@
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     border: 1px solid var(--glass-border);
     box-shadow: var(--shadow-card);
+    position: relative;
+    transition: var(--transition-smooth);
+  }
+  .glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, oklch(0.78 0.22 240 / 0.5), transparent 40%, oklch(0.78 0.18 155 / 0.3));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+  }
+  .glass-card:hover::before { opacity: 1; }
+  .glass-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 30px 60px -25px oklch(0.1 0.02 254 / 0.7), 0 0 0 1px oklch(0.78 0.22 240 / 0.25), 0 0 40px oklch(0.7 0.2 245 / 0.18);
   }
 
   .text-gradient {

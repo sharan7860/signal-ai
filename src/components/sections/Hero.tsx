@@ -1,9 +1,10 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Activity, Sparkles } from "lucide-react";
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import { MagneticButton } from "../MagneticButton";
 import { AIOrb } from "../AIOrb";
 import { AnimatedSparkline } from "../AnimatedSparkline";
+import { CountUp } from "../CountUp";
 
 const heroChartData = [42, 45, 41, 48, 52, 49, 56, 54, 60, 58, 65, 63, 70, 68, 76, 72, 80, 78, 85, 90];
 
@@ -39,25 +40,30 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="glass mb-8 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-muted-foreground"
+            className="glass mb-8 inline-flex items-center gap-2.5 rounded-full px-4 py-1.5 text-xs font-medium"
           >
-            <Sparkles className="h-3.5 w-3.5 text-electric" />
-            <span className="text-foreground/80">Live AI predictions powered by neural forecasting</span>
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inset-0 animate-ping rounded-full bg-emerald-trend opacity-75" />
+              <span className="relative h-2 w-2 rounded-full bg-emerald-trend" />
+            </span>
+            <span className="text-foreground/85">Live AI predictions</span>
+            <span className="text-muted-foreground/60">·</span>
+            <span className="flex items-center gap-1 text-electric"><Sparkles className="h-3 w-3" /> Neural v4.2</span>
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl lg:text-[5.5rem]"
+            className="font-display text-6xl font-semibold leading-[1.02] tracking-[-0.03em] md:text-7xl lg:text-[6.5rem]"
           >
             <span className="text-gradient">Predict Smarter.</span>
             <br />
             <span className="relative">
               Trade Better.
               <motion.span
-                className="absolute -inset-x-2 -bottom-2 h-[3px]"
-                style={{ background: "var(--gradient-electric)" }}
+                className="absolute -inset-x-2 -bottom-2 h-[3px] rounded-full"
+                style={{ background: "var(--gradient-electric)", boxShadow: "0 0 20px oklch(0.7 0.18 245 / 0.7)" }}
                 initial={{ scaleX: 0, transformOrigin: "left" }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 1, delay: 0.9, ease: "easeOut" }}
@@ -92,16 +98,9 @@ export function Hero() {
             transition={{ duration: 1, delay: 0.8 }}
             className="mt-14 grid max-w-lg grid-cols-3 gap-6"
           >
-            {[
-              { v: "98.2%", l: "Model Accuracy" },
-              { v: "$4.2B", l: "Assets Analyzed" },
-              { v: "24/7", l: "Live Inference" },
-            ].map((s) => (
-              <div key={s.l}>
-                <div className="font-display text-2xl font-semibold text-foreground md:text-3xl">{s.v}</div>
-                <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{s.l}</div>
-              </div>
-            ))}
+            <Metric label="Model Accuracy"><CountUp to={98.2} decimals={1} suffix="%" /></Metric>
+            <Metric label="Assets Analyzed"><CountUp to={4.2} decimals={1} prefix="$" suffix="B" /></Metric>
+            <Metric label="Live Inference">24<span className="text-electric">/</span>7</Metric>
           </motion.div>
         </div>
 
@@ -148,5 +147,14 @@ export function Hero() {
         </motion.div>
       </motion.div>
     </section>
+  );
+}
+
+function Metric({ children, label }: { children: ReactNode; label: string }) {
+  return (
+    <div>
+      <div className="font-display text-2xl font-semibold text-foreground md:text-3xl">{children}</div>
+      <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
+    </div>
   );
 }
