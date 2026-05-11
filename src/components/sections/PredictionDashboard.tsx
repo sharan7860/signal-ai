@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   Tooltip,
   ReferenceLine,
+  ReferenceDot,
 } from "recharts";
 
 const chartData = Array.from({ length: 40 }, (_, i) => {
@@ -137,6 +138,9 @@ export function PredictionDashboard() {
                 <Area type="monotone" dataKey="lower" stroke="none" fill="oklch(0.18 0.025 254)" />
                 <Line type="monotone" dataKey="actual" stroke="oklch(0.97 0.01 240)" strokeWidth={2.5} dot={false} />
                 <Line type="monotone" dataKey="predicted" stroke="oklch(0.7 0.18 245)" strokeWidth={2.5} strokeDasharray="6 4" dot={false} />
+                <ReferenceDot x="D6" y={chartData[5].actual ?? undefined} r={6} fill="oklch(0.78 0.18 155)" stroke="oklch(0.18 0.025 254)" strokeWidth={2} label={{ value: "BUY", position: "top", fill: "oklch(0.78 0.18 155)", fontSize: 10, fontWeight: 600 }} />
+                <ReferenceDot x="D18" y={chartData[17].actual ?? undefined} r={6} fill="oklch(0.7 0.21 22)" stroke="oklch(0.18 0.025 254)" strokeWidth={2} label={{ value: "SELL", position: "top", fill: "oklch(0.7 0.21 22)", fontSize: 10, fontWeight: 600 }} />
+                <ReferenceDot x="D24" y={chartData[23].actual ?? undefined} r={6} fill="oklch(0.78 0.18 155)" stroke="oklch(0.18 0.025 254)" strokeWidth={2} label={{ value: "BUY", position: "top", fill: "oklch(0.78 0.18 155)", fontSize: 10, fontWeight: 600 }} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>

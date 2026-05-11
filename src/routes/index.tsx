@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { ParticlesBackground } from "@/components/ParticlesBackground";
-import { CursorGlow } from "@/components/CursorGlow";
+import { CursorEffects } from "@/components/CursorEffects";
+import { FloatingBlobs } from "@/components/FloatingBlobs";
 import { Hero } from "@/components/sections/Hero";
 import { MarketOverview } from "@/components/sections/MarketOverview";
 import { PredictionDashboard } from "@/components/sections/PredictionDashboard";
@@ -36,8 +37,9 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div className="relative min-h-screen overflow-x-hidden">
+      <FloatingBlobs />
       <ParticlesBackground />
-      <CursorGlow />
+      <CursorEffects />
       <Navbar />
       <main className="relative z-10">
         <Hero />
