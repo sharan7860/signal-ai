@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { AnimatedSparkline } from "./AnimatedSparkline";
+import { AnimatedSparkline } from "../AnimatedSparkline";
 
 const tickers = [
   { sym: "NVDA", price: 892.34, chg: 4.21, data: [40, 42, 41, 45, 44, 48, 52, 50, 56, 60, 58, 64] },

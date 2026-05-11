@@ -1,9 +1,9 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Activity, Sparkles } from "lucide-react";
 import { useRef } from "react";
-import { MagneticButton } from "./MagneticButton";
-import { AIOrb } from "./AIOrb";
-import { AnimatedSparkline } from "./AnimatedSparkline";
+import { MagneticButton } from "../MagneticButton";
+import { AIOrb } from "../AIOrb";
+import { AnimatedSparkline } from "../AnimatedSparkline";
 
 const heroChartData = [42, 45, 41, 48, 52, 49, 56, 54, 60, 58, 65, 63, 70, 68, 76, 72, 80, 78, 85, 90];
 
