@@ -84,7 +84,7 @@ export function Portfolio() {
                   <Tooltip
                     contentStyle={{
                       background: "oklch(0.22 0.028 254 / 0.95)",
-                      border: "1px solid oklch(0.65 0.1 245 / 0.3)",
+                      border: "1px solid oklch(0.85 0.14 188 / 0.3)",
                       borderRadius: 12,
                     }}
                   />
