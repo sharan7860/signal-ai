@@ -28,7 +28,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-x-0 top-1/3 h-72 opacity-30"
         style={{ y }}
       >
-        <AnimatedSparkline data={heroChartData} color="oklch(0.7 0.2 245)" height={300} />
+        <AnimatedSparkline data={heroChartData} color="oklch(0.85 0.14 188)" height={300} />
       </motion.div>
 
       <motion.div
@@ -63,7 +63,7 @@ export function Hero() {
               Trade Better.
               <motion.span
                 className="absolute -inset-x-2 -bottom-2 h-[3px] rounded-full"
-                style={{ background: "var(--gradient-electric)", boxShadow: "0 0 20px oklch(0.7 0.18 245 / 0.7)" }}
+                style={{ background: "var(--gradient-electric)", boxShadow: "0 0 20px oklch(0.85 0.14 188 / 0.7)" }}
                 initial={{ scaleX: 0, transformOrigin: "left" }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 1, delay: 0.9, ease: "easeOut" }}

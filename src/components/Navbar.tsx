@@ -65,8 +65,8 @@ export function Navbar() {
                     transition={{ type: "spring", stiffness: 360, damping: 32 }}
                     className="absolute inset-0 -z-0 rounded-full"
                     style={{
-                      background: "oklch(0.7 0.18 245 / 0.12)",
-                      boxShadow: "inset 0 0 0 1px oklch(0.7 0.18 245 / 0.3)",
+                      background: "oklch(0.85 0.14 188 / 0.12)",
+                      boxShadow: "inset 0 0 0 1px oklch(0.85 0.14 188 / 0.3)",
                     }}
                   />
                 )}

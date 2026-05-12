@@ -38,8 +38,8 @@ export function ParticlesBackground() {
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `oklch(0.78 0.2 245 / ${p.a})`;
-        ctx.shadowColor = "oklch(0.7 0.2 245 / 0.8)";
+        ctx.fillStyle = `oklch(0.85 0.14 188 / ${p.a})`;
+        ctx.shadowColor = "oklch(0.85 0.14 188 / 0.8)";
         ctx.shadowBlur = 12 * dpr;
         ctx.fill();
       }
@@ -55,7 +55,7 @@ export function ParticlesBackground() {
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = `oklch(0.7 0.2 245 / ${0.12 * (1 - d / (140 * dpr))})`;
+            ctx.strokeStyle = `oklch(0.85 0.14 188 / ${0.12 * (1 - d / (140 * dpr))})`;
             ctx.lineWidth = 1;
             ctx.shadowBlur = 0;
             ctx.stroke();
