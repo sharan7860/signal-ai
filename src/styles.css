@@ -109,9 +109,8 @@
 }
 
 .dark {
-  /* same as root - app is dark by default */
-  --background: oklch(0.18 0.025 254);
-  --foreground: oklch(0.97 0.01 240);
+  --background: oklch(0.12 0.012 250);
+  --foreground: oklch(0.88 0.005 230);
 }
 
 @keyframes ticker {
