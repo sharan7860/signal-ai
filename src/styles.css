@@ -196,7 +196,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, oklch(0.78 0.22 240 / 0.5), transparent 40%, oklch(0.78 0.18 155 / 0.3));
+    background: linear-gradient(135deg, oklch(0.85 0.14 188 / 0.55), transparent 40%, oklch(0.62 0.08 190 / 0.35));
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
             mask-composite: exclude;
@@ -207,11 +207,11 @@
   .glass-card:hover::before { opacity: 1; }
   .glass-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 30px 60px -25px oklch(0.1 0.02 254 / 0.7), 0 0 0 1px oklch(0.78 0.22 240 / 0.25), 0 0 40px oklch(0.7 0.2 245 / 0.18);
+    box-shadow: 0 30px 60px -25px oklch(0.05 0.01 250 / 0.75), 0 0 0 1px oklch(0.85 0.14 188 / 0.30), 0 0 40px oklch(0.85 0.14 188 / 0.20);
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, oklch(0.97 0.01 240), oklch(0.78 0.15 245));
+    background: linear-gradient(135deg, oklch(0.96 0.01 230), oklch(0.91 0.16 185));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -223,8 +223,8 @@
 
   .grid-bg {
     background-image:
-      linear-gradient(oklch(0.7 0.18 245 / 0.07) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(0.7 0.18 245 / 0.07) 1px, transparent 1px);
+      linear-gradient(oklch(0.85 0.14 188 / 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.85 0.14 188 / 0.07) 1px, transparent 1px);
     background-size: 60px 60px;
   }
 
