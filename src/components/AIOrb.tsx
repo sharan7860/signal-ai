@@ -12,8 +12,8 @@ export function AIOrb({ size = 220 }: { size?: number }) {
         animate={{ rotate: 360 }}
         transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
         style={{
-          borderColor: "oklch(0.7 0.2 245 / 0.3)",
-          boxShadow: "0 0 50px oklch(0.7 0.2 245 / 0.4) inset, 0 0 60px oklch(0.7 0.2 245 / 0.4)",
+          borderColor: "oklch(0.85 0.14 188 / 0.3)",
+          boxShadow: "0 0 50px oklch(0.85 0.14 188 / 0.4) inset, 0 0 60px oklch(0.85 0.14 188 / 0.4)",
         }}
       >
         <div className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-electric shadow-[0_0_20px_var(--electric)]" />
@@ -30,7 +30,7 @@ export function AIOrb({ size = 220 }: { size?: number }) {
         className="absolute inset-12 rounded-full border"
         animate={{ rotate: 360 }}
         transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        style={{ borderColor: "oklch(0.78 0.22 240 / 0.4)" }}
+        style={{ borderColor: "oklch(0.91 0.16 185 / 0.4)" }}
       />
 
       {/* Core */}
@@ -40,9 +40,9 @@ export function AIOrb({ size = 220 }: { size?: number }) {
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         style={{
           background:
-            "radial-gradient(circle at 30% 30%, oklch(0.92 0.05 240), oklch(0.7 0.2 245) 45%, oklch(0.4 0.18 260) 80%)",
+            "radial-gradient(circle at 30% 30%, oklch(0.96 0.04 188), oklch(0.85 0.14 188) 45%, oklch(0.45 0.10 195) 80%)",
           boxShadow:
-            "0 0 60px oklch(0.7 0.2 245 / 0.8), 0 0 120px oklch(0.7 0.2 245 / 0.5), inset 0 -10px 30px oklch(0.3 0.15 260 / 0.6)",
+            "0 0 60px oklch(0.85 0.14 188 / 0.8), 0 0 120px oklch(0.85 0.14 188 / 0.5), inset 0 -10px 30px oklch(0.20 0.05 200 / 0.6)",
         }}
       />
       <motion.div

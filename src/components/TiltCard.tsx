@@ -46,7 +46,7 @@ export function TiltCard({
             background: useTransform(
               [gx, gy],
               ([gxv, gyv]) =>
-                `radial-gradient(400px circle at ${gxv} ${gyv}, oklch(0.7 0.2 245 / 0.18), transparent 60%)`,
+                `radial-gradient(400px circle at ${gxv} ${gyv}, oklch(0.85 0.14 188 / 0.18), transparent 60%)`,
             ),
           }}
         />

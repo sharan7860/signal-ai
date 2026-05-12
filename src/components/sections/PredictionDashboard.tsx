@@ -113,31 +113,31 @@ export function PredictionDashboard() {
               <ComposedChart data={chartData}>
                 <defs>
                   <linearGradient id="conf" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="oklch(0.7 0.18 245)" stopOpacity="0.35" />
-                    <stop offset="100%" stopColor="oklch(0.7 0.18 245)" stopOpacity="0" />
+                    <stop offset="0%" stopColor="oklch(0.85 0.14 188)" stopOpacity="0.35" />
+                    <stop offset="100%" stopColor="oklch(0.85 0.14 188)" stopOpacity="0" />
                   </linearGradient>
                   <linearGradient id="actualG" x1="0" x2="0" y1="0" y2="1">
                     <stop offset="0%" stopColor="oklch(0.97 0.01 240)" stopOpacity="0.15" />
                     <stop offset="100%" stopColor="oklch(0.97 0.01 240)" stopOpacity="0" />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="oklch(0.7 0.18 245 / 0.08)" vertical={false} />
+                <CartesianGrid stroke="oklch(0.85 0.14 188 / 0.08)" vertical={false} />
                 <XAxis dataKey="day" stroke="oklch(0.68 0.02 250)" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis stroke="oklch(0.68 0.02 250)" fontSize={11} tickLine={false} axisLine={false} domain={["dataMin - 10", "dataMax + 10"]} />
                 <Tooltip
                   contentStyle={{
                     background: "oklch(0.22 0.028 254 / 0.95)",
-                    border: "1px solid oklch(0.65 0.1 245 / 0.3)",
+                    border: "1px solid oklch(0.85 0.14 188 / 0.3)",
                     borderRadius: 12,
                     backdropFilter: "blur(16px)",
                   }}
                   labelStyle={{ color: "oklch(0.97 0.01 240)" }}
                 />
-                <ReferenceLine x="D28" stroke="oklch(0.7 0.18 245 / 0.6)" strokeDasharray="4 4" label={{ value: "Now", fill: "oklch(0.7 0.18 245)", fontSize: 11 }} />
+                <ReferenceLine x="D28" stroke="oklch(0.85 0.14 188 / 0.6)" strokeDasharray="4 4" label={{ value: "Now", fill: "oklch(0.85 0.14 188)", fontSize: 11 }} />
                 <Area type="monotone" dataKey="upper" stroke="none" fill="url(#conf)" />
                 <Area type="monotone" dataKey="lower" stroke="none" fill="oklch(0.18 0.025 254)" />
                 <Line type="monotone" dataKey="actual" stroke="oklch(0.97 0.01 240)" strokeWidth={2.5} dot={false} />
-                <Line type="monotone" dataKey="predicted" stroke="oklch(0.7 0.18 245)" strokeWidth={2.5} strokeDasharray="6 4" dot={false} />
+                <Line type="monotone" dataKey="predicted" stroke="oklch(0.85 0.14 188)" strokeWidth={2.5} strokeDasharray="6 4" dot={false} />
                 <ReferenceDot x="D6" y={chartData[5].actual ?? undefined} r={6} fill="oklch(0.78 0.18 155)" stroke="oklch(0.18 0.025 254)" strokeWidth={2} label={{ value: "BUY", position: "top", fill: "oklch(0.78 0.18 155)", fontSize: 10, fontWeight: 600 }} />
                 <ReferenceDot x="D18" y={chartData[17].actual ?? undefined} r={6} fill="oklch(0.7 0.21 22)" stroke="oklch(0.18 0.025 254)" strokeWidth={2} label={{ value: "SELL", position: "top", fill: "oklch(0.7 0.21 22)", fontSize: 10, fontWeight: 600 }} />
                 <ReferenceDot x="D24" y={chartData[23].actual ?? undefined} r={6} fill="oklch(0.78 0.18 155)" stroke="oklch(0.18 0.025 254)" strokeWidth={2} label={{ value: "BUY", position: "top", fill: "oklch(0.78 0.18 155)", fontSize: 10, fontWeight: 600 }} />

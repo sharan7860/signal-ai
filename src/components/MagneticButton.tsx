@@ -67,7 +67,7 @@ export function MagneticButton({
           />
           <span
             className="absolute inset-0 rounded-full opacity-0 blur-2xl transition-opacity duration-500 hover:opacity-90"
-            style={{ background: "radial-gradient(circle, oklch(0.85 0.2 240 / 0.7), transparent 70%)" }}
+            style={{ background: "radial-gradient(circle, oklch(0.91 0.16 185 / 0.7), transparent 70%)" }}
           />
           <span className="absolute inset-0 overflow-hidden rounded-full">
             <span className="absolute -inset-px rounded-full" style={{ background: "linear-gradient(120deg, transparent 30%, oklch(1 0 0 / 0.35) 50%, transparent 70%)", backgroundSize: "200% 100%", animation: "shimmer 2.8s linear infinite" }} />

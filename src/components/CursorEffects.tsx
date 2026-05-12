@@ -60,7 +60,7 @@ export function CursorEffects() {
           className="h-full w-full rounded-full"
           style={{
             background:
-              "radial-gradient(circle, oklch(0.72 0.2 245 / 0.3), oklch(0.7 0.2 280 / 0.08) 45%, transparent 70%)",
+              "radial-gradient(circle, oklch(0.91 0.16 185 / 0.3), oklch(0.62 0.08 195 / 0.08) 45%, transparent 70%)",
           }}
         />
       </motion.div>
@@ -80,9 +80,9 @@ export function CursorEffects() {
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
           className="rounded-full border"
           style={{
-            borderColor: "oklch(0.78 0.22 240 / 0.85)",
+            borderColor: "oklch(0.91 0.16 185 / 0.85)",
             boxShadow:
-              "0 0 18px oklch(0.7 0.2 245 / 0.55), inset 0 0 12px oklch(0.7 0.2 245 / 0.25)",
+              "0 0 18px oklch(0.85 0.14 188 / 0.55), inset 0 0 12px oklch(0.85 0.14 188 / 0.25)",
           }}
         />
       </motion.div>
@@ -122,7 +122,7 @@ function ClickBurst({ x, y }: { x: number; y: number }) {
         animate={{ scale: 2.6, opacity: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="absolute h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border"
-        style={{ borderColor: "oklch(0.78 0.22 240 / 0.6)" }}
+        style={{ borderColor: "oklch(0.91 0.16 185 / 0.6)" }}
       />
       {particles.map((i) => {
         const angle = (i / particles.length) * Math.PI * 2;

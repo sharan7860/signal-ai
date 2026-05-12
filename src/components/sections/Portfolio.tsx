@@ -18,9 +18,9 @@ const perfData = Array.from({ length: 30 }, (_, i) => ({
 }));
 
 const allocation = [
-  { label: "Tech", pct: 42, color: "oklch(0.72 0.2 245)" },
+  { label: "Tech", pct: 42, color: "oklch(0.91 0.16 185)" },
   { label: "Healthcare", pct: 18, color: "oklch(0.78 0.18 155)" },
-  { label: "Energy", pct: 14, color: "oklch(0.78 0.22 240)" },
+  { label: "Energy", pct: 14, color: "oklch(0.91 0.16 185)" },
   { label: "Finance", pct: 12, color: "oklch(0.78 0.18 195)" },
   { label: "Consumer", pct: 9, color: "oklch(0.7 0.18 280)" },
   { label: "Cash", pct: 5, color: "oklch(0.6 0.04 250)" },
@@ -78,13 +78,13 @@ export function Portfolio() {
                       <stop offset="100%" stopColor="oklch(0.78 0.18 155)" stopOpacity="0" />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="oklch(0.7 0.18 245 / 0.06)" vertical={false} />
+                  <CartesianGrid stroke="oklch(0.85 0.14 188 / 0.06)" vertical={false} />
                   <XAxis dataKey="d" hide />
                   <YAxis hide domain={["dataMin", "dataMax"]} />
                   <Tooltip
                     contentStyle={{
                       background: "oklch(0.22 0.028 254 / 0.95)",
-                      border: "1px solid oklch(0.65 0.1 245 / 0.3)",
+                      border: "1px solid oklch(0.85 0.14 188 / 0.3)",
                       borderRadius: 12,
                     }}
                   />

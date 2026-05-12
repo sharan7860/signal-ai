@@ -11,7 +11,7 @@ export function FloatingBlobs() {
         className="absolute -left-40 top-[-10%] h-[520px] w-[520px] rounded-full opacity-40 blur-3xl"
         style={{
           background:
-            "radial-gradient(circle, oklch(0.7 0.2 245 / 0.55), transparent 65%)",
+            "radial-gradient(circle, oklch(0.85 0.14 188 / 0.55), transparent 65%)",
         }}
         animate={{ x: [0, 80, -40, 0], y: [0, 40, -20, 0] }}
         transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
