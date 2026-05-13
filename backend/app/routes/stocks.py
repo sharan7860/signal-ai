@@ -11,24 +11,9 @@ router = APIRouter(tags=["Stocks"])
 
 
 @router.get("/stock/{symbol}", response_model=StockQuoteResponse, tags=["Stock Quote"])
-async def get_stock_quote(symbol: str):
+def get_stock_quote(symbol: str):
     """
     Get stock quote with current price and historical close prices
-
-    Returns:
-    - symbol: Stock ticker symbol
-    - current_price: Latest closing price
-    - open_price: Day's opening price
-    - high_price: Day's high price
-    - low_price: Day's low price
-    - volume: Trading volume
-    - market_cap: Market capitalization
-    - company_name: Company name
-    - sector: Sector
-    - currency: Currency
-    - percentage_change: Percentage change
-    - previous_close: Previous close price
-    - historical_closes: Last 3 months of daily close prices
     """
     try:
         if not symbol or len(symbol) > 10:
@@ -44,7 +29,7 @@ async def get_stock_quote(symbol: str):
 
 # Legacy API endpoints with /api/stocks prefix
 @router.post("/api/stocks/data", response_model=StockDataResponse)
-async def get_stock_data(request: StockSymbolRequest):
+def get_stock_data(request: StockSymbolRequest):
     """
     Get stock data for a given symbol
     """
@@ -60,7 +45,7 @@ async def get_stock_data(request: StockSymbolRequest):
 
 
 @router.get("/api/stocks/data/{symbol}", response_model=StockDataResponse)
-async def get_stock_by_symbol(symbol: str):
+def get_stock_by_symbol(symbol: str):
     """
     Get stock data by symbol
     """
@@ -72,7 +57,7 @@ async def get_stock_by_symbol(symbol: str):
 
 
 @router.post("/api/stocks/analyze", response_model=AIAnalysisResponse)
-async def analyze_stock(request: AIAnalysisRequest):
+def analyze_stock(request: AIAnalysisRequest):
     """
     Get AI analysis for a stock
     """
@@ -101,7 +86,7 @@ async def analyze_stock(request: AIAnalysisRequest):
 
 
 @router.get("/api/stocks/compare/{symbols}")
-async def compare_stocks(symbols: str):
+def compare_stocks(symbols: str):
     """
     Compare multiple stocks
     """

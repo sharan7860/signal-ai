@@ -84,7 +84,7 @@ export function MarketOverview() {
             stocks.map((t, i) => {
               const chg = t.percentage_change || 0;
               const positive = chg >= 0;
-              const history = t.historical_prices?.map((p: any) => p.close) || [];
+              const history = t.historical_closes?.map((p: any) => p.close) || [];
               
               return (
                 <motion.div

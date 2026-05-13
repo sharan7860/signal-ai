@@ -16,17 +16,32 @@ export function AnimatedSparkline({
   fill = true,
   animated = true,
 }: Props) {
+  if (!data || data.length < 2) {
+    return (
+      <div className="flex h-full w-full items-center justify-center text-[10px] text-muted-foreground opacity-20">
+        No data
+      </div>
+    );
+  }
+
   const width = 200;
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
   const step = width / (data.length - 1);
-  const points = data.map((v, i) => [i * step, height - ((v - min) / range) * (height - 8) - 4]);
-  const path = points.reduce(
-    (acc, [x, y], i) => acc + (i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`),
-    "",
-  );
-  const area = `${path} L ${width} ${height} L 0 ${height} Z`;
+  
+  // Calculate points with safety check
+  const points = data.map((v, i) => {
+    const x = i * step;
+    const y = height - ((v - min) / range) * (height - 8) - 4;
+    return [isNaN(x) ? 0 : x, isNaN(y) ? height / 2 : y];
+  });
+
+  const path = points.length > 0 
+    ? `M ${points[0][0]} ${points[0][1]}` + points.slice(1).map(([x, y]) => ` L ${x} ${y}`).join("")
+    : "";
+    
+  const area = path ? `${path} L ${width} ${height} L 0 ${height} Z` : "";
 
   const id = useState(() => Math.random().toString(36).slice(2))[0];
   const [drawn, setDrawn] = useState(!animated);
@@ -45,7 +60,7 @@ export function AnimatedSparkline({
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      {fill && <path d={area} fill={`url(#g-${id})`} />}
+      {fill && path && <path d={area} fill={`url(#g-${id})`} />}
       <motion.path
         d={path}
         fill="none"
