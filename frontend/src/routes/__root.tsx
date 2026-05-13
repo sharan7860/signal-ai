@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 
+import { AIChatbot } from "@/components/chatbot";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -117,6 +118,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <AIChatbot />
     </QueryClientProvider>
   );
 }
