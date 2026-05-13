@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Activity, Twitter, Github, Linkedin, ArrowRight } from "lucide-react";
-import { MagneticButton } from "../MagneticButton";
+import { MagneticButton } from "@/components/MagneticButton";
 
 export function Footer() {
   return (

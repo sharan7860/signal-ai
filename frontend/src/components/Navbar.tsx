@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Activity } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MagneticButton } from "./MagneticButton";
+import { useAuth } from "@/hooks/useAuth";
 
 const links = [
   { label: "Predictions", id: "dashboard" },
@@ -13,6 +14,7 @@ const links = [
 ];
 
 export function Navbar() {
+  const { user, loginWithGoogle, logout } = useAuth();
   const { scrollY } = useScroll();
   const blur = useTransform(scrollY, [0, 100], [10, 28]);
   const bg = useTransform(scrollY, [0, 100], ["oklch(0.18 0.025 254 / 0.25)", "oklch(0.18 0.025 254 / 0.78)"]);
@@ -83,12 +85,29 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <button className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:block">
-            Sign in
-          </button>
-          <MagneticButton className="!px-5 !py-2.5 text-xs">Launch App</MagneticButton>
+          {!user ? (
+            <button 
+              onClick={loginWithGoogle}
+              className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:block"
+            >
+              Sign in
+            </button>
+          ) : (
+            <div className="flex items-center gap-3">
+              {user.photoURL && (
+                <img src={user.photoURL} alt={user.displayName || "User"} className="h-7 w-7 rounded-full border border-electric/30" />
+              )}
+              <button 
+                onClick={logout}
+                className="hidden text-[10px] uppercase tracking-widest text-muted-foreground transition-colors hover:text-electric md:block"
+              >
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </motion.header>
+
   );
 }

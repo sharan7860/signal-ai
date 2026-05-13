@@ -9,8 +9,8 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
-import { CountUp } from "../CountUp";
-import { CircularProgress } from "../CircularProgress";
+import { CountUp } from "@/components/CountUp";
+import { CircularProgress } from "@/components/CircularProgress";
 
 const perfData = Array.from({ length: 30 }, (_, i) => ({
   d: i,

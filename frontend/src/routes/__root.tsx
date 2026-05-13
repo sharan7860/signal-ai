@@ -112,6 +112,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { Toaster } from "sonner";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -119,6 +121,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Outlet />
       <AIChatbot />
+      <Toaster position="top-center" theme="dark" closeButton />
     </QueryClientProvider>
   );
 }

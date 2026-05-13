@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Brain, BarChart3, MessageSquare, Zap, ShieldAlert, Target } from "lucide-react";
-import { TiltCard } from "../TiltCard";
+import { TiltCard } from "@/components/TiltCard";
 
 const features = [
   { icon: Brain, title: "AI Predictions", body: "LSTM and transformer models forecast price action with 94%+ confidence intervals." },

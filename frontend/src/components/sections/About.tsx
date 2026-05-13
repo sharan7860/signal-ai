@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { AIOrb } from "../AIOrb";
+import { AIOrb } from "@/components/AIOrb";
 
 export function About() {
   return (

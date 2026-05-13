@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Sparkles, Newspaper, Rocket, Lightbulb, Brain, Gauge } from "lucide-react";
-import { TypingText } from "../TypingText";
-import { CountUp } from "../CountUp";
+import { TypingText } from "@/components/TypingText";
+import { CountUp } from "@/components/CountUp";
 
 const insights = [
   {

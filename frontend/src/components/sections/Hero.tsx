@@ -1,10 +1,10 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Activity, Sparkles } from "lucide-react";
 import { useRef, type ReactNode } from "react";
-import { MagneticButton } from "../MagneticButton";
-import { AIOrb } from "../AIOrb";
-import { AnimatedSparkline } from "../AnimatedSparkline";
-import { CountUp } from "../CountUp";
+import { MagneticButton } from "@/components/MagneticButton";
+import { AIOrb } from "@/components/AIOrb";
+import { AnimatedSparkline } from "@/components/AnimatedSparkline";
+import { CountUp } from "@/components/CountUp";
 
 const heroChartData = [42, 45, 41, 48, 52, 49, 56, 54, 60, 58, 65, 63, 70, 68, 76, 72, 80, 78, 85, 90];
 
