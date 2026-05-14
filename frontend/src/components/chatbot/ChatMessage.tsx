@@ -42,16 +42,20 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                     rel="noreferrer"
                   />
                 ),
-                code: ({ inline, className, children, ...props }) => (
-                  <code
-                    {...props}
-                    className={`rounded-xl border border-[rgba(102,252,241,0.18)] bg-slate-900 px-1 py-0.5 text-[0.8rem] text-cyan-200 ${
-                      inline ? "" : "block overflow-x-auto"
-                    } ${className ?? ""}`}
-                  >
-                    {children}
-                  </code>
-                ),
+                code: ({ node, className, children, ...props }) => {
+                  const isInline = !node?.position || (node as any)?.tagName !== "pre";
+                  const isBlock = String(children).includes("\n");
+                  return (
+                    <code
+                      {...props}
+                      className={`rounded-xl border border-[rgba(102,252,241,0.18)] bg-slate-900 px-1 py-0.5 text-[0.8rem] text-cyan-200 ${
+                        !isBlock ? "" : "block overflow-x-auto"
+                      } ${className ?? ""}`}
+                    >
+                      {children}
+                    </code>
+                  );
+                },
                 li: ({ children, ...props }) => <li className="ml-5 list-disc" {...props}>{children}</li>,
                 p: ({ children, ...props }) => <p className="mt-0" {...props}>{children}</p>,
               }}

@@ -27,3 +27,33 @@ export const fetchMultipleStocks = async (symbols: string[]): Promise<any[]> => 
   const promises = symbols.map(s => fetchStockQuote(s));
   return Promise.all(promises);
 };
+export const fetchStockForecast = async (symbol: string, days: number = 30): Promise<any> => {
+  const response = await fetch(`${API_BASE_URL}/forecast/${symbol}?days=${days}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch forecast for ${symbol}`);
+  }
+  return response.json();
+};
+
+export const fetchStockAnalytics = async (symbol: string): Promise<any> => {
+  const response = await fetch(`${API_BASE_URL}/forecast/${symbol}/analytics`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch analytics for ${symbol}`);
+  }
+  return response.json();
+};
+export const fetchBatchInfo = async (symbols: string[]): Promise<any> => {
+  const response = await fetch(`${API_BASE_URL}/api/stocks/info/${symbols.join(",")}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch stock info for ${symbols}`);
+  }
+  return response.json();
+};
+
+export const fetchWatchlistNews = async (symbols: string[]): Promise<any> => {
+  const response = await fetch(`${API_BASE_URL}/api/stocks/news/${symbols.join(",")}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch stock news for ${symbols}`);
+  }
+  return response.json();
+};

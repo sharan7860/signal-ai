@@ -5,7 +5,10 @@ from fastapi import APIRouter, HTTPException
 from app.models import StockSymbolRequest, StockDataResponse, StockQuoteResponse, AIAnalysisRequest, AIAnalysisResponse
 from app.services import StockService, AIAnalysisService
 from datetime import datetime
+import logging
 from typing import List
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["Stocks"])
 
@@ -96,3 +99,35 @@ def compare_stocks(symbols: str):
         return {"stocks": stocks, "timestamp": datetime.utcnow()}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error comparing stocks: {str(e)}")
+@router.get("/api/stocks/info/{symbols}")
+def get_stocks_info(symbols: str):
+    """
+    Get info for multiple stocks (sector, industry, name)
+    """
+    try:
+        symbol_list = [s.strip().upper() for s in symbols.split(",")]
+        info_list = [StockService.get_stock_info(s) for s in symbol_list]
+        return {"info": info_list, "timestamp": datetime.utcnow()}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error fetching stock info: {str(e)}")
+
+
+@router.get("/api/stocks/news/{symbols}")
+def get_stocks_news(symbols: str):
+    """
+    Get live news for multiple stocks from the watchlist
+    """
+    try:
+        symbol_list = [s.strip().upper() for s in symbols.split(",")]
+        all_news = []
+        for sym in symbol_list:
+            if not sym: continue
+            all_news.extend(StockService.get_stock_news(sym))
+        
+        # Sort by publish time descending
+        all_news.sort(key=lambda x: x.get("provider_publish_time") or 0, reverse=True)
+        
+        return {"news": all_news[:20], "default_watchlist": ["AAPL", "NVDA", "TSLA", "MSFT", "GOOGL"], "timestamp": datetime.utcnow()}
+    except Exception as e:
+        logger.error(f"News fetch error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=400, detail=f"Error fetching stock news: {str(e)}")

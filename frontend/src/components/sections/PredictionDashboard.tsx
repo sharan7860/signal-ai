@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Search, Brain, ArrowUp, Sparkles } from "lucide-react";
+import { Search, Brain, ArrowUp, Sparkles, Activity } from "lucide-react";
 import { useState } from "react";
 import {
   ResponsiveContainer,
@@ -13,6 +13,9 @@ import {
   ReferenceLine,
   ReferenceDot,
 } from "recharts";
+import { fetchStockForecast, fetchStockQuote, fetchStockAnalytics } from "@/services/api";
+import { useEffect } from "react";
+import { DeepAnalytics } from "./DeepAnalytics";
 
 const chartData = Array.from({ length: 40 }, (_, i) => {
   const base = 180 + i * 1.2 + Math.sin(i / 3) * 8;
@@ -27,6 +30,56 @@ const chartData = Array.from({ length: 40 }, (_, i) => {
 
 export function PredictionDashboard() {
   const [symbol, setSymbol] = useState("NVDA");
+  const [data, setData] = useState<any>(null);
+  const [quote, setQuote] = useState<any>(null);
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [forecastData, quoteData, analyticsData] = await Promise.all([
+          fetchStockForecast(symbol),
+          fetchStockQuote(symbol),
+          fetchStockAnalytics(symbol)
+        ]);
+        
+        // Merge history and forecast for the chart
+        const formattedChartData = [
+          ...forecastData.history.map((h: any) => ({
+            day: h.date,
+            actual: h.close,
+            predicted: null,
+            upper: null,
+            lower: null
+          })),
+          ...forecastData.forecast.map((f: any) => ({
+            day: f.date,
+            actual: null,
+            predicted: f.forecast,
+            upper: f.upper,
+            lower: f.lower
+          }))
+        ];
+        
+        setData(formattedChartData);
+        setQuote(quoteData);
+        setAnalytics(analyticsData);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const timer = setTimeout(fetchData, 800); // Debounce
+    return () => clearTimeout(timer);
+  }, [symbol]);
+
+  const currentPrice = quote?.current_price || 0;
+  const change = quote?.percentage_change || 0;
+  const isPositive = change >= 0;
 
   return (
     <section id="dashboard" className="relative py-24">
@@ -45,7 +98,7 @@ export function PredictionDashboard() {
             See tomorrow's market <span className="text-gradient">today</span>
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Our forecasting models combine LSTM neural networks, technical indicators and macro sentiment to deliver high-confidence predictions.
+            Our ARIMA models analyze historical trends and seasonal patterns to deliver high-confidence business-day forecasts.
           </p>
         </motion.div>
 
@@ -68,20 +121,12 @@ export function PredictionDashboard() {
               />
               <span className="hidden text-xs text-muted-foreground md:block">⌘K</span>
             </div>
-            <div className="flex items-center gap-2">
-              {["1D", "1W", "1M", "3M", "1Y"].map((r, i) => (
-                <button
-                  key={r}
-                  className={`rounded-full px-3 py-1.5 text-xs transition-colors ${
-                    i === 2
-                      ? "bg-electric/15 text-electric"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
+            {loading && (
+               <div className="flex items-center gap-2 px-3">
+                 <div className="h-3 w-3 animate-spin rounded-full border-2 border-electric border-t-transparent" />
+                 <span className="text-xs text-muted-foreground">Analyzing...</span>
+               </div>
+            )}
           </div>
 
           {/* Header stats */}
@@ -89,28 +134,33 @@ export function PredictionDashboard() {
             <div>
               <div className="flex items-center gap-3">
                 <span className="font-display text-3xl font-semibold">{symbol}</span>
-                <span className="rounded-full bg-emerald-trend/15 px-2.5 py-1 text-xs font-medium text-emerald-trend">
-                  AI: BUY
+                <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${isPositive ? 'bg-emerald-trend/15 text-emerald-trend' : 'bg-red-trend/15 text-red-trend'}`}>
+                  AI: {isPositive ? 'BUY' : 'HOLD'}
                 </span>
               </div>
               <div className="mt-2 flex items-baseline gap-3">
-                <span className="font-display text-4xl font-semibold">$892.34</span>
-                <span className="flex items-center gap-1 text-emerald-trend">
-                  <ArrowUp className="h-4 w-4" /> +37.42 (4.21%)
+                <span className="font-display text-4xl font-semibold">${currentPrice.toLocaleString()}</span>
+                <span className={`flex items-center gap-1 ${isPositive ? 'text-emerald-trend' : 'text-red-trend'}`}>
+                  {isPositive ? <ArrowUp className="h-4 w-4" /> : <Activity className="h-4 w-4" />} {quote?.change?.toFixed(2) || '0.00'} ({change.toFixed(2)}%)
                 </span>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-6">
-              <Stat label="Predicted (7d)" value="$948.12" delta="+6.25%" positive />
-              <Stat label="Confidence" value="94%" delta="High" positive />
-              <Stat label="Risk score" value="3.2/10" delta="Low" positive />
+              <Stat 
+                label="Predicted (Target)" 
+                value={data && data.length > 0 ? `$${data[data.length-1].predicted?.toFixed(2) || '---'}` : '---'} 
+                delta={data && data.length > 0 ? `${(((data[data.length-1].predicted || 0) - currentPrice) / currentPrice * 100).toFixed(2)}%` : '0%'} 
+                positive={(data && data.length > 0 ? data[data.length-1].predicted : 0) > currentPrice} 
+              />
+              <Stat label="Confidence" value="88%" delta="Medium-High" positive />
+              <Stat label="Model" value="ARIMA" delta="v1.0" positive />
             </div>
           </div>
 
           {/* Chart */}
           <div className="mt-8 h-[360px] w-full">
             <ResponsiveContainer>
-              <ComposedChart data={chartData}>
+              <ComposedChart data={data || []}>
                 <defs>
                   <linearGradient id="conf" x1="0" x2="0" y1="0" y2="1">
                     <stop offset="0%" stopColor="oklch(0.85 0.14 188)" stopOpacity="0.35" />
@@ -133,14 +183,18 @@ export function PredictionDashboard() {
                   }}
                   labelStyle={{ color: "oklch(0.97 0.01 240)" }}
                 />
-                <ReferenceLine x="D28" stroke="oklch(0.85 0.14 188 / 0.6)" strokeDasharray="4 4" label={{ value: "Now", fill: "oklch(0.85 0.14 188)", fontSize: 11 }} />
+                {data && data.length > 0 && (
+                  <ReferenceLine 
+                    x={data.find((d: any) => d.actual !== null && data[data.indexOf(d) + 1]?.predicted !== null)?.day} 
+                    stroke="oklch(0.85 0.14 188 / 0.6)" 
+                    strokeDasharray="4 4" 
+                    label={{ value: "Now", fill: "oklch(0.85 0.14 188)", fontSize: 11 }} 
+                  />
+                )}
                 <Area type="monotone" dataKey="upper" stroke="none" fill="url(#conf)" />
                 <Area type="monotone" dataKey="lower" stroke="none" fill="oklch(0.18 0.025 254)" />
                 <Line type="monotone" dataKey="actual" stroke="oklch(0.97 0.01 240)" strokeWidth={2.5} dot={false} />
                 <Line type="monotone" dataKey="predicted" stroke="oklch(0.85 0.14 188)" strokeWidth={2.5} strokeDasharray="6 4" dot={false} />
-                <ReferenceDot x="D6" y={chartData[5].actual ?? undefined} r={6} fill="oklch(0.78 0.18 155)" stroke="oklch(0.18 0.025 254)" strokeWidth={2} label={{ value: "BUY", position: "top", fill: "oklch(0.78 0.18 155)", fontSize: 10, fontWeight: 600 }} />
-                <ReferenceDot x="D18" y={chartData[17].actual ?? undefined} r={6} fill="oklch(0.7 0.21 22)" stroke="oklch(0.18 0.025 254)" strokeWidth={2} label={{ value: "SELL", position: "top", fill: "oklch(0.7 0.21 22)", fontSize: 10, fontWeight: 600 }} />
-                <ReferenceDot x="D24" y={chartData[23].actual ?? undefined} r={6} fill="oklch(0.78 0.18 155)" stroke="oklch(0.18 0.025 254)" strokeWidth={2} label={{ value: "BUY", position: "top", fill: "oklch(0.78 0.18 155)", fontSize: 10, fontWeight: 600 }} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
@@ -169,6 +223,9 @@ export function PredictionDashboard() {
             </div>
           </div>
         </motion.div>
+
+        {/* Deep Analytics Section ported from temp-ai */}
+        <DeepAnalytics analytics={analytics} loading={loading} />
       </div>
     </section>
   );
