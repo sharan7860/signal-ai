@@ -33,10 +33,6 @@ class Settings(BaseSettings):
     CORS_ALLOW_METHODS: List[str] = ["*"]
     CORS_ALLOW_HEADERS: List[str] = ["*"]
 
-    # Database Configuration
-    MONGODB_URL: str = "mongodb://localhost:27017"
-    MONGODB_DATABASE: str = "trader_ai"
-    MONGODB_TIMEOUT: int = 5000
 
     # OpenRouter API Configuration (for AI responses)
     OPENROUTER_API_KEY: str = ""
