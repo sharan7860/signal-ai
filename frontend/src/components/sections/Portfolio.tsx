@@ -25,6 +25,8 @@ const sectorColors: Record<string, string> = {
   "Other": "#94A3B8",
 };
 
+import { PortfolioInsights } from "../portfolio/PortfolioInsights";
+
 export function Portfolio() {
   const [watchlist, setWatchlist] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
@@ -100,13 +102,13 @@ export function Portfolio() {
           transition={{ duration: 0.6 }}
           className="mb-14 max-w-2xl"
         >
-          <div className="mb-3 text-xs uppercase tracking-widest text-electric">Portfolio</div>
+          <div className="mb-3 text-xs uppercase tracking-widest text-electric">Portfolio Intelligence</div>
           <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
-            Your wealth,<br /><span className="text-gradient">visualized.</span>
+            AI-Driven<br /><span className="text-gradient">Portfolio Wealth.</span>
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 mb-10">
           {/* Performance card */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -116,9 +118,9 @@ export function Portfolio() {
             className="glass-card relative overflow-hidden rounded-3xl p-7 lg:col-span-2"
           >
              <div className="mb-6 flex items-center justify-between">
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Active Watchlist</div>
+                <div className="text-xs uppercase tracking-wider text-muted-foreground">Active Analysis Watchlist</div>
                 <div className="flex items-center gap-2">
-                   <div className="glass flex items-center gap-2 rounded-full px-4 py-1.5">
+                   <div className="glass flex items-center gap-2 rounded-full px-4 py-1.5 border border-white/5">
                       <input 
                         value={newTicker}
                         onChange={(e) => setNewTicker(e.target.value.toUpperCase())}
@@ -135,7 +137,7 @@ export function Portfolio() {
 
              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
                 {watchlist.map(sym => (
-                   <div key={sym} className="glass group relative flex flex-col items-center justify-center rounded-2xl p-4 transition-all hover:border-primary/40">
+                   <div key={sym} className="glass group relative flex flex-col items-center justify-center rounded-2xl p-4 transition-all hover:border-electric/40">
                       <button 
                         onClick={() => removeTicker(sym)}
                         className="absolute -right-2 -top-2 flex h-6 w-6 scale-0 items-center justify-center rounded-full bg-red-trend/20 text-red-trend opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100"
@@ -150,13 +152,13 @@ export function Portfolio() {
 
             <div className="mt-10 flex flex-wrap items-end justify-between gap-4 border-t border-white/5 pt-8">
               <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Projected Value</div>
-                <div className="mt-1 font-display text-4xl font-semibold">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground">Est. Portfolio Value</div>
+                <div className="mt-1 font-display text-4xl font-semibold text-gradient">
                   <CountUp to={142847.92} decimals={2} prefix="$" />
                 </div>
               </div>
               <div className="flex gap-6">
-                <Stat label="Holdings" to={watchlist.length} />
+                <Stat label="Total Assets" to={watchlist.length} />
                 <Stat label="Sectors" to={new Set(watchlist.map(s => infoMap[s]?.sector)).size} />
               </div>
             </div>
@@ -171,8 +173,8 @@ export function Portfolio() {
             className="glass-card relative overflow-hidden rounded-3xl p-7"
           >
             <div className="flex items-center justify-between">
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">Asset Allocation</div>
-              <PieChart className="h-4 w-4 text-primary" />
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">Allocation Distribution</div>
+              <PieChart className="h-4 w-4 text-electric" />
             </div>
             
             <div className="mt-8 flex items-center justify-center">
@@ -180,7 +182,7 @@ export function Portfolio() {
                 segments={allocation}
                 size={180}
                 thickness={14}
-                centerLabel="Assets"
+                centerLabel="Holdings"
                 centerValue={watchlist.length.toString()}
               />
             </div>
@@ -195,19 +197,12 @@ export function Portfolio() {
                   </div>
                 </div>
               ))}
-              {watchlist.length === 0 && (
-                <div className="text-center text-xs text-muted-foreground">Add tickers to see allocation</div>
-              )}
             </div>
           </motion.div>
         </div>
 
-        {/* AI Portfolio Score row */}
-        <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-3">
-          <ScoreCard icon={Brain} label="AI Portfolio Score" value={87} max={100} accent="electric" desc="Strong diversification, healthy momentum exposure." />
-          <ScoreCard icon={Shield} label="Risk Resilience" value={72} max={100} accent="emerald" desc="Low drawdown vs S&P over rolling 90 days." />
-          <ScoreCard icon={TrendingUp} label="Alpha (30d)" value={64} max={100} accent="electric" desc="Outperforming benchmark by +3.4%." />
-        </div>
+        {/* AI Portfolio Intelligence Metrics */}
+        <PortfolioInsights />
       </div>
     </section>
   );
@@ -217,62 +212,9 @@ function Stat({ label, to, prefix }: { label: string; to: number; prefix?: strin
   return (
     <div>
       <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="font-display text-lg font-semibold text-emerald-trend">
+      <div className="font-display text-lg font-semibold text-electric">
         <CountUp to={to} prefix={prefix} />
       </div>
     </div>
-  );
-}
-
-function ScoreCard({
-  icon: Icon,
-  label,
-  value,
-  max,
-  desc,
-  accent,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: number;
-  max: number;
-  desc: string;
-  accent: "electric" | "emerald";
-}) {
-  const grad = accent === "electric" ? "var(--gradient-electric)" : "var(--gradient-emerald)";
-  const color = accent === "electric" ? "text-electric" : "text-emerald-trend";
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className="glass-card group relative overflow-hidden rounded-3xl p-6"
-    >
-      <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full opacity-20 blur-3xl transition-opacity duration-500 group-hover:opacity-40" style={{ background: grad }} />
-      <div className="flex items-center gap-3">
-        <div className={`grid h-10 w-10 place-items-center rounded-xl glass ${color}`}>
-          <Icon className="h-5 w-5" />
-        </div>
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
-      </div>
-      <div className="mt-5 flex items-baseline gap-2">
-        <div className="font-display text-4xl font-semibold">
-          <CountUp to={value} />
-        </div>
-        <div className="text-sm text-muted-foreground">/ {max}</div>
-      </div>
-      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-secondary">
-        <motion.div
-          initial={{ width: 0 }}
-          whileInView={{ width: `${value}%` }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-          className="h-full rounded-full"
-          style={{ background: grad, boxShadow: `0 0 12px ${accent === "electric" ? "var(--electric)" : "var(--emerald-trend)"}` }}
-        />
-      </div>
-      <p className="mt-3 text-sm text-muted-foreground">{desc}</p>
-    </motion.div>
   );
 }

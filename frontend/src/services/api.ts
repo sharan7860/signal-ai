@@ -57,3 +57,11 @@ export const fetchWatchlistNews = async (symbols: string[]): Promise<any> => {
   }
   return response.json();
 };
+export const fetchTrendingStocks = async (): Promise<any> => {
+  const response = await fetch(`${API_BASE_URL}/api/stocks/trending`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch trending stocks`);
+  }
+  const data = await response.json();
+  return data.stocks || [];
+};

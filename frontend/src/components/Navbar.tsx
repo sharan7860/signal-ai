@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { Activity, Bell, Trash2, CheckCircle2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MagneticButton } from "./MagneticButton";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -24,6 +24,24 @@ export function Navbar() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifs, setShowNotifs] = useState(false);
   const unreadCount = notifications.filter(n => !n.read).length;
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  // Click Outside to Close Notifications
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setShowNotifs(false);
+      }
+    }
+
+    if (showNotifs) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showNotifs]);
 
   useEffect(() => {
     // Listen for new signals from Insights
@@ -107,7 +125,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-5">
           {/* Notification Bell */}
-          <div className="relative">
+          <div className="relative" ref={notifRef}>
             <button 
               onClick={() => setShowNotifs(!showNotifs)}
               className={`relative flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-white/5 ${showNotifs ? 'bg-white/5 text-electric' : 'text-muted-foreground'}`}

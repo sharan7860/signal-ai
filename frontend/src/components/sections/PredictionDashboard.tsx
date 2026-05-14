@@ -68,6 +68,8 @@ export function PredictionDashboard() {
         setAnalytics(analyticsData);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
+        setData([]); // Clear chart on error
+        setAnalytics(null);
       } finally {
         setLoading(false);
       }
@@ -141,7 +143,7 @@ export function PredictionDashboard() {
               <div className="mt-2 flex items-baseline gap-3">
                 <span className="font-display text-4xl font-semibold">${currentPrice.toLocaleString()}</span>
                 <span className={`flex items-center gap-1 ${isPositive ? 'text-emerald-trend' : 'text-red-trend'}`}>
-                  {isPositive ? <ArrowUp className="h-4 w-4" /> : <Activity className="h-4 w-4" />} {quote?.change?.toFixed(2) || '0.00'} ({change.toFixed(2)}%)
+                  {isPositive ? <ArrowUp className="h-4 w-4" /> : <Activity className="h-4 w-4" />} {quote?.change?.toFixed(2) || '0.00'} ({change?.toFixed(2) || '0.00'}%)
                 </span>
               </div>
             </div>
@@ -185,7 +187,7 @@ export function PredictionDashboard() {
                 />
                 {data && data.length > 0 && (
                   <ReferenceLine 
-                    x={data.find((d: any) => d.actual !== null && data[data.indexOf(d) + 1]?.predicted !== null)?.day} 
+                    x={data?.find((d: any) => d.actual !== null && data[data.indexOf(d) + 1]?.predicted !== null)?.day} 
                     stroke="oklch(0.85 0.14 188 / 0.6)" 
                     strokeDasharray="4 4" 
                     label={{ value: "Now", fill: "oklch(0.85 0.14 188)", fontSize: 11 }} 
@@ -215,8 +217,8 @@ export function PredictionDashboard() {
                 </div>
                 <div>
                   <div className="text-xs font-medium uppercase tracking-wider text-electric">AI Explanation</div>
-                  <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">
-                    Recommendation generated because <span className="text-electric">RSI is oversold (28)</span>, MACD shows bullish crossover, and the prediction trend is strongly upward across the 7-day forecast window. Sentiment analysis on 1,243 news sources supports continued momentum.
+                  <p className="mt-1.5 text-sm leading-relaxed text-foreground/90 italic">
+                    {analytics?.explanation || "Analyzing market signals, sentiment nodes, and technical momentum to synthesize a real-time verdict for this asset..."}
                   </p>
                 </div>
               </div>

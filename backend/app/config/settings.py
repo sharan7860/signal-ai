@@ -24,7 +24,10 @@ class Settings(BaseSettings):
         "http://localhost:8081", 
         "http://localhost:3000", 
         "http://127.0.0.1:8080",
-        "http://127.0.0.1:8081"
+        "http://127.0.0.1:8081",
+        "https://stellar-signal-ai.vercel.app",
+        "https://stellar-signal-ai.web.app",
+        "https://stellar-signal-ai.firebaseapp.com"
     ]
     CORS_ALLOW_CREDENTIALS: bool = True
     CORS_ALLOW_METHODS: List[str] = ["*"]
@@ -37,7 +40,7 @@ class Settings(BaseSettings):
 
     # OpenRouter API Configuration (for AI responses)
     OPENROUTER_API_KEY: str = ""
-    OPENROUTER_API_URL: str = "https://api.openrouter.ai/v1"
+    OPENROUTER_API_URL: str = "https://openrouter.ai/api/v1"
 
     # Stock Data Configuration
     STOCK_DATA_CACHE_EXPIRY: int = 3600  # 1 hour in seconds

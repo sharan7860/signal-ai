@@ -119,15 +119,56 @@ def get_stocks_news(symbols: str):
     """
     try:
         symbol_list = [s.strip().upper() for s in symbols.split(",")]
-        all_news = []
+        news_map = {}
         for sym in symbol_list:
             if not sym: continue
-            all_news.extend(StockService.get_stock_news(sym))
+            ticker_news = StockService.get_stock_news(sym)
+            for item in ticker_news:
+                if item["id"] not in news_map:
+                    news_map[item["id"]] = item
+        
+        all_news = list(news_map.values())
         
         # Sort by publish time descending
         all_news.sort(key=lambda x: x.get("provider_publish_time") or 0, reverse=True)
         
-        return {"news": all_news[:20], "default_watchlist": ["AAPL", "NVDA", "TSLA", "MSFT", "GOOGL"], "timestamp": datetime.utcnow()}
+        return {"news": all_news[:20], "timestamp": datetime.utcnow()}
     except Exception as e:
         logger.error(f"News fetch error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=400, detail=f"Error fetching stock news: {str(e)}")
+
+
+@router.get("/api/analytics/{symbol}")
+def get_stock_analytics(symbol: str):
+    """
+    Get deep AI-driven analytics for a specific stock
+    """
+    try:
+        data = StockService.get_ai_analytics(symbol)
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error fetching analytics: {str(e)}")
+@router.get("/portfolio/analytics")
+def get_portfolio_analytics(symbols: str = ""):
+    """
+    Get aggregate AI portfolio analytics for the provided symbols.
+    """
+    try:
+        symbol_list = [s.strip().upper() for s in symbols.split(",") if s.strip()]
+        data = StockService.get_portfolio_analytics(symbol_list)
+        return data
+    except Exception as e:
+        logger.error(f"Portfolio analytics route error: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error fetching portfolio analytics: {str(e)}")
+@router.get("/api/stocks/trending")
+def get_trending_stocks():
+    """
+    Get stocks currently trending in the news or high-activity tickers
+    """
+    try:
+        symbols = StockService.get_trending_symbols()
+        stocks = StockService.get_multiple_stocks(symbols)
+        return {"stocks": stocks, "timestamp": datetime.utcnow()}
+    except Exception as e:
+        logger.error(f"Trending stocks route error: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error fetching trending stocks: {str(e)}")

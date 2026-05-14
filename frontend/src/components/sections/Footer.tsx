@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Activity, Twitter, Github, Linkedin, ArrowRight } from "lucide-react";
+import { Activity, Instagram, Github, Linkedin, ArrowRight } from "lucide-react";
 import { MagneticButton } from "@/components/MagneticButton";
 
 export function Footer() {
@@ -49,10 +49,16 @@ export function Footer() {
               AI-powered stock analytics, forecasting, and intelligent recommendations for the next generation of investors.
             </p>
             <div className="mt-6 flex items-center gap-3">
-              {[Twitter, Github, Linkedin].map((Icon, i) => (
+              {[
+                { Icon: Github, href: "https://github.com" },
+                { Icon: Linkedin, href: "https://linkedin.com" },
+                { Icon: Instagram, href: "https://instagram.com" }
+              ].map(({ Icon, href }, i) => (
                 <a
                   key={i}
-                  href="#"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="grid h-9 w-9 place-items-center rounded-full glass text-muted-foreground transition-colors hover:text-electric"
                 >
                   <Icon className="h-4 w-4" />
