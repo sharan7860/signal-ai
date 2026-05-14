@@ -11,22 +11,85 @@ import {
 } from "recharts";
 import { CountUp } from "@/components/CountUp";
 import { CircularProgress } from "@/components/CircularProgress";
+import { useState, useEffect } from "react";
+import { fetchBatchInfo } from "@/services/api";
+import { Plus, Trash2, PieChart } from "lucide-react";
 
-const perfData = Array.from({ length: 30 }, (_, i) => ({
-  d: i,
-  v: 100000 + i * 1200 + Math.sin(i / 3) * 3000 + Math.random() * 1500,
-}));
-
-const allocation = [
-  { label: "Tech", pct: 42, color: "oklch(0.91 0.16 185)" },
-  { label: "Healthcare", pct: 18, color: "oklch(0.78 0.18 155)" },
-  { label: "Energy", pct: 14, color: "oklch(0.91 0.16 185)" },
-  { label: "Finance", pct: 12, color: "oklch(0.78 0.18 195)" },
-  { label: "Consumer", pct: 9, color: "oklch(0.7 0.18 280)" },
-  { label: "Cash", pct: 5, color: "oklch(0.6 0.04 250)" },
-];
+const sectorColors: Record<string, string> = {
+  "Technology": "var(--primary)",
+  "Healthcare": "var(--emerald-trend)",
+  "Financial Services": "#60A5FA",
+  "Consumer Cyclical": "#FBBF24",
+  "Communication Services": "#F472B6",
+  "Energy": "#F87171",
+  "Other": "#94A3B8",
+};
 
 export function Portfolio() {
+  const [watchlist, setWatchlist] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("trader_watchlist");
+      return saved ? JSON.parse(saved) : ["AAPL", "NVDA", "TSLA", "MSFT", "GOOGL"];
+    }
+    return ["AAPL", "NVDA", "TSLA", "MSFT", "GOOGL"];
+  });
+  const [newTicker, setNewTicker] = useState("");
+  const [infoMap, setInfoMap] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("trader_watchlist", JSON.stringify(watchlist));
+    window.dispatchEvent(new CustomEvent("trader_watchlist_updated", { detail: watchlist }));
+    const fetchInfo = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchBatchInfo(watchlist);
+        const map: Record<string, any> = {};
+        data.info.forEach((item: any) => {
+          map[item.symbol] = item;
+        });
+        setInfoMap(map);
+      } catch (err) {
+        console.error("Error fetching portfolio info:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInfo();
+  }, [watchlist]);
+
+  const addTicker = () => {
+    const sym = newTicker.trim().toUpperCase();
+    if (sym && !watchlist.includes(sym)) {
+      setWatchlist([...watchlist, sym]);
+      setNewTicker("");
+    }
+  };
+
+  const removeTicker = (sym: string) => {
+    setWatchlist(watchlist.filter(s => s !== sym));
+  };
+
+  // Calculate allocation
+  const calculateAllocation = () => {
+    const totals: Record<string, number> = {};
+    watchlist.forEach(sym => {
+      const sector = infoMap[sym]?.sector || "Other";
+      totals[sector] = (totals[sector] || 0) + 1;
+    });
+
+    const totalCount = watchlist.length;
+    if (totalCount === 0) return [];
+
+    return Object.entries(totals).map(([label, count]) => ({
+      label,
+      pct: Math.round((count / totalCount) * 100),
+      color: sectorColors[label] || sectorColors["Other"],
+    }));
+  };
+
+  const allocation = calculateAllocation();
+
   return (
     <section id="portfolio" className="relative py-24">
       <div className="mx-auto max-w-7xl px-6">
@@ -52,55 +115,54 @@ export function Portfolio() {
             transition={{ duration: 0.6 }}
             className="glass-card relative overflow-hidden rounded-3xl p-7 lg:col-span-2"
           >
-            <div className="flex flex-wrap items-end justify-between gap-4">
+             <div className="mb-6 flex items-center justify-between">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground">Active Watchlist</div>
+                <div className="flex items-center gap-2">
+                   <div className="glass flex items-center gap-2 rounded-full px-4 py-1.5">
+                      <input 
+                        value={newTicker}
+                        onChange={(e) => setNewTicker(e.target.value.toUpperCase())}
+                        onKeyDown={(e) => e.key === 'Enter' && addTicker()}
+                        placeholder="ADD TICKER..." 
+                        className="w-24 bg-transparent text-[10px] outline-none placeholder:text-muted-foreground"
+                      />
+                      <button onClick={addTicker} className="text-electric hover:scale-110 transition-transform">
+                        <Plus className="h-4 w-4" />
+                      </button>
+                   </div>
+                </div>
+             </div>
+
+             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+                {watchlist.map(sym => (
+                   <div key={sym} className="glass group relative flex flex-col items-center justify-center rounded-2xl p-4 transition-all hover:border-primary/40">
+                      <button 
+                        onClick={() => removeTicker(sym)}
+                        className="absolute -right-2 -top-2 flex h-6 w-6 scale-0 items-center justify-center rounded-full bg-red-trend/20 text-red-trend opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                      <div className="font-display text-sm font-semibold">{sym}</div>
+                      <div className="mt-1 text-[10px] text-muted-foreground">{infoMap[sym]?.sector || '---'}</div>
+                   </div>
+                ))}
+             </div>
+
+            <div className="mt-10 flex flex-wrap items-end justify-between gap-4 border-t border-white/5 pt-8">
               <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Total Value</div>
+                <div className="text-xs uppercase tracking-wider text-muted-foreground">Projected Value</div>
                 <div className="mt-1 font-display text-4xl font-semibold">
                   <CountUp to={142847.92} decimals={2} prefix="$" />
                 </div>
-                <div className="mt-1 flex items-center gap-2 text-sm text-emerald-trend">
-                  <ArrowUp className="h-4 w-4" /> +<CountUp to={18422.18} decimals={2} prefix="$" /> (14.8%) all-time
-                </div>
               </div>
               <div className="flex gap-6">
-                <Stat label="Today" prefix="+$" to={1284} />
-                <Stat label="7d" prefix="+$" to={3940} />
-                <Stat label="30d" prefix="+$" to={9182} />
+                <Stat label="Holdings" to={watchlist.length} />
+                <Stat label="Sectors" to={new Set(watchlist.map(s => infoMap[s]?.sector)).size} />
               </div>
-            </div>
-
-            <div className="mt-6 h-64">
-              <ResponsiveContainer>
-                <AreaChart data={perfData}>
-                  <defs>
-                    <linearGradient id="pg" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stopColor="oklch(0.78 0.18 155)" stopOpacity="0.5" />
-                      <stop offset="100%" stopColor="oklch(0.78 0.18 155)" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="oklch(0.85 0.14 188 / 0.06)" vertical={false} />
-                  <XAxis dataKey="d" hide />
-                  <YAxis hide domain={["dataMin", "dataMax"]} />
-                  <Tooltip
-                    contentStyle={{
-                      background: "oklch(0.22 0.028 254 / 0.95)",
-                      border: "1px solid oklch(0.85 0.14 188 / 0.3)",
-                      borderRadius: 12,
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="v"
-                    stroke="oklch(0.78 0.18 155)"
-                    strokeWidth={2.5}
-                    fill="url(#pg)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
             </div>
           </motion.div>
 
-          {/* Allocation + AI Score */}
+          {/* Allocation */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -108,24 +170,34 @@ export function Portfolio() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="glass-card relative overflow-hidden rounded-3xl p-7"
           >
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">Asset Allocation</div>
-            <div className="mt-4 flex items-center justify-center">
+            <div className="flex items-center justify-between">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">Asset Allocation</div>
+              <PieChart className="h-4 w-4 text-primary" />
+            </div>
+            
+            <div className="mt-8 flex items-center justify-center">
               <CircularProgress
                 segments={allocation}
                 size={180}
                 thickness={14}
-                centerLabel="Holdings"
-                centerValue="12"
+                centerLabel="Assets"
+                centerValue={watchlist.length.toString()}
               />
             </div>
-            <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2.5">
+            
+            <div className="mt-8 space-y-3">
               {allocation.map((a) => (
-                <div key={a.label} className="flex items-center gap-2 text-xs">
-                  <span className="h-2 w-2 rounded-full" style={{ background: a.color, boxShadow: `0 0 8px ${a.color}` }} />
-                  <span className="text-foreground/85">{a.label}</span>
-                  <span className="ml-auto font-display text-muted-foreground">{a.pct}%</span>
+                <div key={a.label} className="flex items-center gap-3">
+                  <div className="h-2 w-2 rounded-full" style={{ background: a.color, boxShadow: `0 0 10px ${a.color}` }} />
+                  <div className="flex flex-1 items-center justify-between text-xs">
+                    <span className="text-foreground/85">{a.label}</span>
+                    <span className="font-mono text-muted-foreground">{a.pct}%</span>
+                  </div>
                 </div>
               ))}
+              {watchlist.length === 0 && (
+                <div className="text-center text-xs text-muted-foreground">Add tickers to see allocation</div>
+              )}
             </div>
           </motion.div>
         </div>

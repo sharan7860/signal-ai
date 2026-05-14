@@ -19,7 +19,13 @@ class Settings(BaseSettings):
     RELOAD: bool = True
 
     # CORS Configuration
-    CORS_ORIGINS: List[str] = ["http://localhost:8080", "http://localhost:3000", "http://127.0.0.1:8080"]
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:8080", 
+        "http://localhost:8081", 
+        "http://localhost:3000", 
+        "http://127.0.0.1:8080",
+        "http://127.0.0.1:8081"
+    ]
     CORS_ALLOW_CREDENTIALS: bool = True
     CORS_ALLOW_METHODS: List[str] = ["*"]
     CORS_ALLOW_HEADERS: List[str] = ["*"]

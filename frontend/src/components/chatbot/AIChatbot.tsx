@@ -89,7 +89,7 @@ export function AIChatbot() {
           const next = [
             ...prev,
             {
-              role: "assistant",
+              role: "assistant" as const,
               content:
                 "I couldn't complete your request at this time. Please verify your OpenRouter API key and try again.",
               timestamp: new Date().toISOString(),

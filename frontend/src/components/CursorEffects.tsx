@@ -1,144 +1,124 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
-interface Burst {
-  id: number;
-  x: number;
-  y: number;
-}
-
 /**
- * Premium cursor system:
- *  - Soft trailing glow that follows the pointer with spring physics
- *  - Crisp inner dot
- *  - Outer ring that expands on interactive elements ([data-cursor="hover"])
- *  - Particle burst on click
+ * Premium cursor system for TRADER AI:
+ *  - Lightweight and elegant
+ *  - Soft purple-white glow
+ *  - Smooth trailing lag with spring physics
+ *  - Gentle expansion on interactive elements
+ *  - Minimal pulse on click
  */
 export function CursorEffects() {
-  const x = useMotionValue(-100);
-  const y = useMotionValue(-100);
-  const sx = useSpring(x, { stiffness: 500, damping: 50, mass: 0.4 });
-  const sy = useSpring(y, { stiffness: 500, damping: 50, mass: 0.4 });
-  const glowX = useSpring(x, { stiffness: 90, damping: 20 });
-  const glowY = useSpring(y, { stiffness: 90, damping: 20 });
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
+  
+  // Spring settings for the "lag" effect
+  const springConfig = { stiffness: 250, damping: 30, mass: 0.5 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
+  
+  // Outer glow with more lag for trailing effect
+  const glowConfig = { stiffness: 120, damping: 25, mass: 0.8 };
+  const glowX = useSpring(mouseX, glowConfig);
+  const glowY = useSpring(mouseY, glowConfig);
+
   const [hover, setHover] = useState(false);
-  const [bursts, setBursts] = useState<Burst[]>([]);
-  const idRef = useRef(0);
+  const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
-      x.set(e.clientX);
-      y.set(e.clientY);
-      const t = e.target as HTMLElement | null;
-      const interactive = !!t?.closest(
-        'button, a, [data-cursor="hover"], input, textarea, [role="button"]',
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+      
+      const target = e.target as HTMLElement | null;
+      const isInteractive = !!target?.closest(
+        'button, a, [data-cursor="hover"], input, textarea, [role="button"], .glass-card'
       );
-      setHover(interactive);
+      setHover(isInteractive);
     };
-    const onDown = (e: MouseEvent) => {
-      const id = ++idRef.current;
-      setBursts((b) => [...b, { id, x: e.clientX, y: e.clientY }]);
-      setTimeout(() => setBursts((b) => b.filter((p) => p.id !== id)), 700);
+
+    const onDown = () => {
+      setClicked(true);
+      setTimeout(() => setClicked(false), 200);
     };
+
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mousedown", onDown);
+    
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mousedown", onDown);
     };
-  }, [x, y]);
+  }, [mouseX, mouseY]);
 
   return (
     <>
-      {/* Soft glow trail */}
+      {/* Soft Ambient Glow Trail */}
       <motion.div
         aria-hidden
-        style={{ x: glowX, y: glowY, translateX: "-50%", translateY: "-50%" }}
-        className="pointer-events-none fixed left-0 top-0 z-[60] hidden h-[420px] w-[420px] rounded-full opacity-60 blur-3xl md:block"
+        style={{
+          x: glowX,
+          y: glowY,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
+        className="pointer-events-none fixed left-0 top-0 z-[60] hidden h-64 w-64 rounded-full opacity-40 blur-3xl md:block"
       >
-        <div
+        <div 
           className="h-full w-full rounded-full"
           style={{
-            background:
-              "radial-gradient(circle, oklch(0.91 0.16 185 / 0.3), oklch(0.62 0.08 195 / 0.08) 45%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(139, 92, 246, 0.4), rgba(196, 181, 253, 0.1) 40%, transparent 70%)"
           }}
         />
       </motion.div>
 
-      {/* Outer ring */}
+      {/* Premium Cursor Outer Ring */}
       <motion.div
         aria-hidden
-        style={{ x: sx, y: sy, translateX: "-50%", translateY: "-50%" }}
+        style={{
+          x: cursorX,
+          y: cursorY,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
         className="pointer-events-none fixed left-0 top-0 z-[61] hidden md:block"
       >
         <motion.div
           animate={{
-            width: hover ? 56 : 30,
-            height: hover ? 56 : 30,
-            opacity: hover ? 1 : 0.7,
+            scale: clicked ? 0.9 : hover ? 1.5 : 1,
+            opacity: 1,
           }}
-          transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="rounded-full border"
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="h-8 w-8 rounded-full border border-white/20"
           style={{
-            borderColor: "oklch(0.91 0.16 185 / 0.85)",
-            boxShadow:
-              "0 0 18px oklch(0.85 0.14 188 / 0.55), inset 0 0 12px oklch(0.85 0.14 188 / 0.25)",
+            background: "rgba(139, 92, 246, 0.03)",
+            backdropFilter: "blur(2px)",
+            boxShadow: hover 
+              ? "0 0 20px rgba(139, 92, 246, 0.3), inset 0 0 10px rgba(139, 92, 246, 0.1)"
+              : "0 0 10px rgba(255, 255, 255, 0.1)"
           }}
         />
       </motion.div>
 
-      {/* Inner dot */}
+      {/* Central Precision Dot */}
       <motion.div
         aria-hidden
-        style={{ x, y, translateX: "-50%", translateY: "-50%" }}
+        style={{
+          x: mouseX,
+          y: mouseY,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
         className="pointer-events-none fixed left-0 top-0 z-[62] hidden md:block"
       >
         <motion.div
-          animate={{ scale: hover ? 0.4 : 1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 24 }}
-          className="h-1.5 w-1.5 rounded-full bg-electric"
-          style={{ boxShadow: "0 0 12px var(--electric)" }}
+          animate={{
+            scale: clicked ? 0.8 : 1,
+          }}
+          className="h-1 w-1 rounded-full bg-white shadow-[0_0_10px_rgba(139,92,246,1)]"
         />
       </motion.div>
-
-      {/* Click bursts */}
-      {bursts.map((b) => (
-        <ClickBurst key={b.id} x={b.x} y={b.y} />
-      ))}
     </>
-  );
-}
-
-function ClickBurst({ x, y }: { x: number; y: number }) {
-  const particles = Array.from({ length: 8 }, (_, i) => i);
-  return (
-    <div
-      aria-hidden
-      className="pointer-events-none fixed left-0 top-0 z-[63]"
-      style={{ transform: `translate(${x}px, ${y}px)` }}
-    >
-      <motion.div
-        initial={{ scale: 0, opacity: 0.7 }}
-        animate={{ scale: 2.6, opacity: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="absolute h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border"
-        style={{ borderColor: "oklch(0.91 0.16 185 / 0.6)" }}
-      />
-      {particles.map((i) => {
-        const angle = (i / particles.length) * Math.PI * 2;
-        const dx = Math.cos(angle) * 32;
-        const dy = Math.sin(angle) * 32;
-        return (
-          <motion.div
-            key={i}
-            initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-            animate={{ x: dx, y: dy, opacity: 0, scale: 0.4 }}
-            transition={{ duration: 0.55, ease: "easeOut" }}
-            className="absolute h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-electric"
-            style={{ boxShadow: "0 0 10px var(--electric)" }}
-          />
-        );
-      })}
-    </div>
   );
 }
