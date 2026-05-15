@@ -10,7 +10,7 @@ from datetime import datetime
 
 from app.config import settings
 from app.utils import setup_logging
-from app.routes import health, stocks, forecast, chat
+from app.routes import health, stocks, forecast, chat, alerts
 
 # Setup logging
 logger = setup_logging()
@@ -40,6 +40,7 @@ app.include_router(health.router)
 app.include_router(stocks.router)
 app.include_router(forecast.router)
 app.include_router(chat.router)
+app.include_router(alerts.router)
 
 
 # Global exception handler
