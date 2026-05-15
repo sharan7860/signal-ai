@@ -1,0 +1,50 @@
+type User @table {
+  username: String!
+  email: String!
+  createdAt: Timestamp!
+  firstName: String
+  lastName: String
+}
+
+type Stock @table {
+  tickerSymbol: String!
+  companyName: String!
+  industry: String!
+  createdAt: Timestamp!
+  description: String
+  marketCap: Int64
+}
+
+type HistoricalPrice @table {
+  stock: Stock!
+  date: Date!
+  openPrice: Float!
+  closePrice: Float!
+  highPrice: Float!
+  lowPrice: Float!
+  volume: Int!
+}
+
+type Prediction @table {
+  stock: Stock!
+  predictionDate: Date!
+  predictedPrice: Float!
+  predictionModel: String!
+  confidenceScore: Float
+}
+
+type VirtualPortfolio @table {
+  user: User!
+  portfolioName: String!
+  startingBalance: Float!
+  createdAt: Timestamp!
+  description: String
+}
+
+type PortfolioStock @table(key: ["portfolio", "stock"]) {
+  portfolio: VirtualPortfolio!
+  stock: Stock!
+  quantity: Int!
+  purchasePrice: Float!
+  purchaseDate: Date!
+}

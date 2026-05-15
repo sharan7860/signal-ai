@@ -13,8 +13,9 @@ logger = logging.getLogger(__name__)
 class AlertService:
     """Service for generating and managing AI-powered alerts"""
     
-    # In-memory storage for demo purposes (can be moved to MongoDB later)
+    # In-memory storage for demo purposes
     _alerts_cache = []
+    _read_ids = set()
     _last_generated = None
 
     @staticmethod
@@ -132,6 +133,17 @@ class AlertService:
             # For this demo, we'll keep up to 15 latest alerts
             combined = new_alerts + AlertService._alerts_cache
             combined.sort(key=lambda x: x.timestamp, reverse=True)
+            # Ensure we always have at least one alert for demo/initial view
+            if not combined:
+                combined.append(Alert(
+                    id="sys-001",
+                    symbol="SYSTEM",
+                    title="AI Engine Online",
+                    message="Alert Center is active and monitoring 50+ tickers for technical breakouts.",
+                    severity="info",
+                    timestamp=datetime.utcnow()
+                ))
+
             AlertService._alerts_cache = combined[:15]
             AlertService._last_generated = datetime.utcnow()
             

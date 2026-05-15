@@ -1,0 +1,47 @@
+query ListAllStocks @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public as it only lists stock information.") {
+  stocks {
+    id
+    tickerSymbol
+    companyName
+    industry
+    description
+    marketCap
+    createdAt
+  }
+}
+
+mutation CreateVirtualPortfolio($portfolioName: String!, $startingBalance: Float!, $description: String) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it inserts a portfolio associated with the current user.") {
+  virtualPortfolio_insert(data: {
+    portfolioName: $portfolioName,
+    startingBalance: $startingBalance,
+    description: $description,
+    userId_expr: "auth.uid"
+  }) {
+    id
+  }
+}
+
+mutation AddStockToPortfolio($portfolioId: UUID!, $stockId: UUID!, $quantity: Int!, $purchasePrice: Float!, $purchaseDate: Date!) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it adds a stock to an existing portfolio.") {
+  portfolioStock_insert(data: {
+    portfolioId: $portfolioId,
+    stockId: $stockId,
+    quantity: $quantity,
+    purchasePrice: $purchasePrice,
+    purchaseDate: $purchaseDate
+  }) {
+    portfolioId
+    stockId
+  }
+}
+
+mutation UpdateUserProfile($firstName: String, $lastName: String) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it updates the current user's profile.") {
+  user_update(
+    key: { id_expr: "auth.uid" },
+    data: {
+      firstName: $firstName,
+      lastName: $lastName
+    }
+  ) {
+    id
+  }
+}
