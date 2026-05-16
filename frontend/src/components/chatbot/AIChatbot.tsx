@@ -22,6 +22,7 @@ const SUGGESTED_PROMPTS = [
   "Top dividend stocks 2026",
   "Explain RSI indicator",
   "Evaluate NVDA risk",
+  "Evaluate NVDA risk",
 ];
 
 export function AIChatbot() {
@@ -110,16 +111,16 @@ export function AIChatbot() {
 
         setMessages((prev) => [...prev, assistantMessage]);
       } catch (err: any) {
-        setError(err.message || "Neural link failure. Retrying...");
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant" as const,
-            content:
-              "I couldn't complete your request at this time. Please verify your OpenRouter API key and try again.",
-            timestamp: new Date().toISOString(),
-          },
-        ]);
+        console.error("Chat Error:", err);
+        setError(err.message || "Neural link failure. Check your connection.");
+        
+        const errorMessage: ChatMessageType = {
+          role: "assistant",
+          content: "I couldn't complete your request at this time. Please verify your OpenRouter API key and try again.",
+          timestamp: new Date().toISOString(),
+        };
+        
+        setMessages((prev) => [...prev, errorMessage]);
       } finally {
         setIsLoading(false);
       }

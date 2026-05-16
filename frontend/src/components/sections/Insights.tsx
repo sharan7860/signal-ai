@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Sparkles, Brain, Gauge, ExternalLink, Calendar, Clock, Zap, Newspaper } from "lucide-react";
 import { TypingText } from "@/components/TypingText";
@@ -24,9 +25,6 @@ export function Insights() {
     setLoading(true);
     try {
       const data = await fetchWatchlistNews(targetWatchlist);
-
-      const allNews = data.news || [];
-
       const rawNews = data?.news || [];
 
       // Deduplicate news based on title or ID
@@ -48,26 +46,21 @@ export function Insights() {
 
       // Alert on new high-priority signals
       freshNews.forEach((signal: any) => {
-
-        if (!seenSignals.current.has(signal.id)) {
-
-          if (signal?.id && !seenSignals.current.has(signal.id)) {
-            seenSignals.current.add(signal.id);
-            playNotificationSound();
-            notifyNewSignal({
-              id: signal.id,
-              title: signal.title,
-              symbol: signal.symbol
-            });
-          }
-        });
+        if (signal?.id && !seenSignals.current.has(signal.id)) {
+          seenSignals.current.add(signal.id);
+          playNotificationSound();
+          notifyNewSignal({
+            id: signal.id,
+            title: signal.title,
+            symbol: signal.symbol
+          });
+        }
+      });
 
       setNews(allNews);
     } catch (err) {
       console.error("Error fetching news:", err);
-
-
-      setNews([]); // Clear news on error
+      setNews([]); 
       setRecentCount(0);
     } finally {
       setLoading(false);

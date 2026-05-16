@@ -1,6 +1,7 @@
+
 import { motion } from "framer-motion";
 import { Search, Brain, ArrowUp, Sparkles, Activity } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -11,22 +12,9 @@ import {
   CartesianGrid,
   Tooltip,
   ReferenceLine,
-  ReferenceDot,
 } from "recharts";
 import { fetchStockForecast, fetchStockQuote, fetchStockAnalytics } from "@/services/api";
-import { useEffect } from "react";
 import { DeepAnalytics } from "./DeepAnalytics";
-
-const chartData = Array.from({ length: 40 }, (_, i) => {
-  const base = 180 + i * 1.2 + Math.sin(i / 3) * 8;
-  return {
-    day: `D${i + 1}`,
-    actual: i < 28 ? +(base + (Math.random() - 0.5) * 6).toFixed(2) : null,
-    predicted: +(base + Math.sin(i / 4) * 4 + (i > 25 ? (i - 25) * 1.8 : 0)).toFixed(2),
-    upper: +(base + Math.sin(i / 4) * 4 + (i > 25 ? (i - 25) * 1.8 : 0) + 8).toFixed(2),
-    lower: +(base + Math.sin(i / 4) * 4 + (i > 25 ? (i - 25) * 1.8 : 0) - 8).toFixed(2),
-  };
-});
 
 export function PredictionDashboard() {
   const [symbol, setSymbol] = useState("NVDA");
@@ -45,19 +33,15 @@ export function PredictionDashboard() {
           fetchStockAnalytics(symbol)
         ]);
 
-
-
-
-        // Merge history and forecast for the chart
         const formattedChartData = [
-          ...forecastData.history.map((h: any) => ({
+          ...(forecastData.history || []).map((h: any) => ({
             day: h.date,
             actual: h.close,
             predicted: null,
             upper: null,
             lower: null
           })),
-          ...forecastData.forecast.map((f: any) => ({
+          ...(forecastData.forecast || []).map((f: any) => ({
             day: f.date,
             actual: null,
             predicted: f.forecast,
@@ -66,24 +50,19 @@ export function PredictionDashboard() {
           }))
         ];
 
-
-
-
         setData(formattedChartData);
         setQuote(quoteData);
         setAnalytics(analyticsData);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
-
-
-        setData([]); // Clear chart on error
+        setData([]);
         setAnalytics(null);
       } finally {
         setLoading(false);
       }
     };
 
-    const timer = setTimeout(fetchData, 800); // Debounce
+    const timer = setTimeout(fetchData, 800);
     return () => clearTimeout(timer);
   }, [symbol]);
 
@@ -132,12 +111,6 @@ export function PredictionDashboard() {
               <span className="hidden text-xs text-muted-foreground md:block">⌘K</span>
             </div>
             {loading && (
-
-              <div className="flex items-center gap-2 px-3">
-                <div className="h-3 w-3 animate-spin rounded-full border-2 border-electric border-t-transparent" />
-                <span className="text-xs text-muted-foreground">Analyzing...</span>
-              </div>
-  
               <div className="flex items-center gap-2 px-3">
                 <div className="h-3 w-3 animate-spin rounded-full border-2 border-electric border-t-transparent" />
                 <span className="text-xs text-muted-foreground">Analyzing...</span>
@@ -157,26 +130,16 @@ export function PredictionDashboard() {
               <div className="mt-2 flex items-baseline gap-3">
                 <span className="font-display text-4xl font-semibold">${currentPrice.toLocaleString()}</span>
                 <span className={`flex items-center gap-1 ${isPositive ? 'text-emerald-trend' : 'text-red-trend'}`}>
-
-                  {isPositive ? <ArrowUp className="h-4 w-4" /> : <Activity className="h-4 w-4" />} {quote?.change?.toFixed(2) || '0.00'} ({change.toFixed(2)}%)
-
                   {isPositive ? <ArrowUp className="h-4 w-4" /> : <Activity className="h-4 w-4" />} {quote?.change?.toFixed(2) || '0.00'} ({change?.toFixed(2) || '0.00'}%)
                 </span>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-6">
-
               <Stat
                 label="Predicted (Target)"
-                value={data && data.length > 0 ? `$${data[data.length - 1].predicted?.toFixed(2) || '---'}` : '---'}
-                delta={data && data.length > 0 ? `${(((data[data.length - 1].predicted || 0) - currentPrice) / currentPrice * 100).toFixed(2)}%` : '0%'}
-                positive={(data && data.length > 0 ? data[data.length - 1].predicted : 0) > currentPrice}
-  
-              <Stat
-                label="Predicted (Target)"
-                value={data && data.length > 0 ? `$${data[data.length - 1].predicted?.toFixed(2) || '---'}` : '---'}
-                delta={data && data.length > 0 ? `${(((data[data.length - 1].predicted || 0) - currentPrice) / currentPrice * 100).toFixed(2)}%` : '0%'}
-                positive={(data && data.length > 0 ? data[data.length - 1].predicted : 0) > currentPrice}
+                value={data && data.length > 0 && data[data.length - 1].predicted ? `$${data[data.length - 1].predicted.toFixed(2)}` : '---'}
+                delta={data && data.length > 0 && data[data.length - 1].predicted ? `${(((data[data.length - 1].predicted - currentPrice) / currentPrice) * 100).toFixed(2)}%` : '0%'}
+                positive={data && data.length > 0 && data[data.length - 1].predicted > currentPrice}
               />
               <Stat label="Confidence" value="88%" delta="Medium-High" positive />
               <Stat label="Model" value="ARIMA" delta="v1.0" positive />
@@ -192,10 +155,6 @@ export function PredictionDashboard() {
                     <stop offset="0%" stopColor="oklch(0.85 0.14 188)" stopOpacity="0.35" />
                     <stop offset="100%" stopColor="oklch(0.85 0.14 188)" stopOpacity="0" />
                   </linearGradient>
-                  <linearGradient id="actualG" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="oklch(0.97 0.01 240)" stopOpacity="0.15" />
-                    <stop offset="100%" stopColor="oklch(0.97 0.01 240)" stopOpacity="0" />
-                  </linearGradient>
                 </defs>
                 <CartesianGrid stroke="oklch(0.85 0.14 188 / 0.08)" vertical={false} />
                 <XAxis dataKey="day" stroke="oklch(0.68 0.02 250)" fontSize={11} tickLine={false} axisLine={false} />
@@ -210,19 +169,12 @@ export function PredictionDashboard() {
                   labelStyle={{ color: "oklch(0.97 0.01 240)" }}
                 />
                 {data && data.length > 0 && (
-
                   <ReferenceLine
-                    x={data.find((d: any) => d.actual !== null && data[data.indexOf(d) + 1]?.predicted !== null)?.day}
+                    x={data.find((d: any, i: number) => d.actual !== null && data[i + 1]?.predicted !== null)?.day}
                     stroke="oklch(0.85 0.14 188 / 0.6)"
                     strokeDasharray="4 4"
                     label={{ value: "Now", fill: "oklch(0.85 0.14 188)", fontSize: 11 }}
-  
-                  <ReferenceLine
-                    x={data?.find((d: any) => d.actual !== null && data[data.indexOf(d) + 1]?.predicted !== null)?.day}
-                    stroke="oklch(0.85 0.14 188 / 0.6)"
-                    strokeDasharray="4 4"
-                    label={{ value: "Now", fill: "oklch(0.85 0.14 188)", fontSize: 11 }}
-                   />
+                  />
                 )}
                 <Area type="monotone" dataKey="upper" stroke="none" fill="url(#conf)" />
                 <Area type="monotone" dataKey="lower" stroke="none" fill="oklch(0.18 0.025 254)" />
@@ -257,7 +209,6 @@ export function PredictionDashboard() {
           </div>
         </motion.div>
 
-        {/* Deep Analytics Section ported from temp-ai */}
         <DeepAnalytics analytics={analytics} loading={loading} />
       </div>
     </section>
