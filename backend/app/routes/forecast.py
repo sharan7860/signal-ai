@@ -20,7 +20,7 @@ async def get_stock_forecast(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-<<<<<<< HEAD
+ 
 @router.get("/{symbol}/analytics")
 async def get_stock_analytics(symbol: str):
     """
@@ -28,7 +28,7 @@ async def get_stock_analytics(symbol: str):
     """
     try:
         return ForecastService.get_analytics(symbol.upper())
-=======
+
 from app.services.stock_service import StockService
 
 @router.get("/{symbol}/analytics")
@@ -44,6 +44,5 @@ async def get_stock_analytics(symbol: str):
         
         # Merge them
         return {**stats, **ai_data}
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
-    except Exception as e:
+     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

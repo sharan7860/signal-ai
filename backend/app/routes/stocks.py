@@ -119,12 +119,12 @@ def get_stocks_news(symbols: str):
     """
     try:
         symbol_list = [s.strip().upper() for s in symbols.split(",")]
-<<<<<<< HEAD
+ 
         all_news = []
         for sym in symbol_list:
             if not sym: continue
             all_news.extend(StockService.get_stock_news(sym))
-=======
+  
         news_map = {}
         for sym in symbol_list:
             if not sym: continue
@@ -134,17 +134,16 @@ def get_stocks_news(symbols: str):
                     news_map[item["id"]] = item
         
         all_news = list(news_map.values())
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
-        
+         
         # Sort by publish time descending
         all_news.sort(key=lambda x: x.get("provider_publish_time") or 0, reverse=True)
         
-<<<<<<< HEAD
+ 
         return {"news": all_news[:20], "default_watchlist": ["AAPL", "NVDA", "TSLA", "MSFT", "GOOGL"], "timestamp": datetime.utcnow()}
     except Exception as e:
         logger.error(f"News fetch error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=400, detail=f"Error fetching stock news: {str(e)}")
-=======
+  
         return {"news": all_news[:20], "timestamp": datetime.utcnow()}
     except Exception as e:
         logger.error(f"News fetch error: {str(e)}", exc_info=True)
@@ -185,4 +184,4 @@ def get_trending_stocks():
     except Exception as e:
         logger.error(f"Trending stocks route error: {str(e)}")
         raise HTTPException(status_code=400, detail=f"Error fetching trending stocks: {str(e)}")
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
+ 

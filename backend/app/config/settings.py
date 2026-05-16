@@ -24,15 +24,14 @@ class Settings(BaseSettings):
         "http://localhost:8081", 
         "http://localhost:3000", 
         "http://127.0.0.1:8080",
-<<<<<<< HEAD
+ 
         "http://127.0.0.1:8081"
-=======
+  
         "http://127.0.0.1:8081",
         "https://stellar-signal-ai.vercel.app",
         "https://stellar-signal-ai.web.app",
         "https://stellar-signal-ai.firebaseapp.com"
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
-    ]
+     ]
     CORS_ALLOW_CREDENTIALS: bool = True
     CORS_ALLOW_METHODS: List[str] = ["*"]
     CORS_ALLOW_HEADERS: List[str] = ["*"]

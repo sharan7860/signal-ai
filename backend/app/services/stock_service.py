@@ -213,12 +213,11 @@ class StockService:
                 return []
 
             formatted_news = []
-<<<<<<< HEAD
+ 
             for item in news[:5]:  # Limit to 5 items per ticker
-=======
+  
             for item in news[:2]:  # Limit to 2 items per ticker
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
-                # New yfinance structure: data is nested under 'content' & 'provider'
+                 # New yfinance structure: data is nested under 'content' & 'provider'
                 content = item.get("content") or {}
                 provider = item.get("provider") or {}
                 canonical = content.get("canonicalUrl") or content.get("clickThroughUrl") or {}
