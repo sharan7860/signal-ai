@@ -89,7 +89,7 @@ class StockService:
         results = []
         for symbol in symbols:
             try:
-                data = StockService.get_stock_data(symbol)
+                data = StockService.get_stock_quote(symbol)
                 results.append(data)
             except Exception as e:
                 logger.error(f"Failed to fetch {symbol}: {str(e)}")

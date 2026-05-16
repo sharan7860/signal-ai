@@ -21,13 +21,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "AI-powered stock analytics, forecasting and intelligent recommendations. Built for the next generation of investors.",
+          "AI-powered stock analytics, forecasting and intelligent Recommendations. Built for the next generation of investors.",
       },
       { property: "og:title", content: "TRADER AI — Predict Smarter. Trade Better." },
       {
         property: "og:description",
         content:
-          "AI-powered stock analytics, forecasting and intelligent recommendations.",
+          "AI-powered stock analytics, forecasting and intelligent Recommendations.",
       },
     ],
   }),

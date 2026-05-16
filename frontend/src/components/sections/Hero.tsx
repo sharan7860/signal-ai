@@ -33,7 +33,7 @@ export function Hero() {
           fetchStockQuote(target),
           fetchAnalytics(target)
         ]);
-        
+
         setPredictionData({
           symbol: target,
           change: quote.percentage_change || 0,
@@ -48,7 +48,7 @@ export function Hero() {
 
     const debounce = setTimeout(updatePredictions, 600);
     const interval = setInterval(updatePredictions, 60000); // 1m refresh
-    
+
     return () => {
       clearTimeout(debounce);
       clearInterval(interval);
@@ -92,27 +92,29 @@ export function Hero() {
               <span className="absolute inset-0 animate-ping rounded-full bg-emerald-trend opacity-75" />
               <span className="relative h-2 w-2 rounded-full bg-emerald-trend" />
             </span>
-            <span className="text-foreground/85">Live AI predictions</span>
+            <span className="text-foreground/85">Jarvis Neural Intelligence</span>
             <span className="text-muted-foreground/60">·</span>
-            <span className="flex items-center gap-1 text-electric"><Sparkles className="h-3 w-3" /> Neural v4.2</span>
+            <span className="flex items-center gap-1 text-electric"><Sparkles className="h-3 w-3" /> System v5.0</span>
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="font-display text-6xl font-semibold leading-[1.02] tracking-[-0.03em] md:text-7xl lg:text-[6.5rem]"
+            className="font-display text-4xl font-bold leading-[1.1] tracking-[-0.02em] md:text-6xl lg:text-[4.5rem]"
           >
-            <span className="text-gradient">Predict Smarter.</span>
+            <span className="text-foreground/90">Beyond Predictions.</span>
             <br />
-            <span className="relative">
-              Trade Better.
+            <span className="relative inline-block mt-2">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-electric to-purple-500 animate-gradient-x drop-shadow-[0_0_25px_rgba(139,92,246,0.35)]">
+                Intelligent Recommendations.
+              </span>
               <motion.span
-                className="absolute -inset-x-2 -bottom-2 h-[3px] rounded-full"
-                style={{ background: "var(--gradient-electric)", boxShadow: "0 0 20px oklch(0.85 0.14 188 / 0.7)" }}
+                className="absolute -inset-x-2 -bottom-1 h-[3px] rounded-full"
+                style={{ background: "var(--gradient-electric)", boxShadow: "0 0 30px oklch(0.85 0.14 188 / 0.8)" }}
                 initial={{ scaleX: 0, transformOrigin: "left" }}
                 animate={{ scaleX: 1 }}
-                transition={{ duration: 1, delay: 0.9, ease: "easeOut" }}
+                transition={{ duration: 1.2, delay: 1.0, ease: "easeOut" }}
               />
             </span>
           </motion.h1>
@@ -120,10 +122,10 @@ export function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl"
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground/80 md:text-xl"
           >
-            AI-powered stock analytics, forecasting, and intelligent recommendations — engineered for the next generation of investors.
+            AI-powered market intelligence that transforms signals into smarter investment decisions.
           </motion.p>
 
           <motion.div
@@ -154,15 +156,15 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="mt-10 flex flex-wrap items-center gap-4"
           >
-            <MagneticButton 
+            <MagneticButton
               onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
               icon={<ArrowRight className="h-4 w-4" />}
             >
               Start Analyzing
             </MagneticButton>
-            <MagneticButton 
+            <MagneticButton
               onClick={() => document.getElementById('insights')?.scrollIntoView({ behavior: 'smooth' })}
-              variant="ghost" 
+              variant="ghost"
               icon={<Sparkles className="h-4 w-4 text-electric" />}
             >
               Live AI Insights

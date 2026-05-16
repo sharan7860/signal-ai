@@ -207,6 +207,7 @@ const AlertDrawer: React.FC<AlertDrawerProps> = ({
     </AnimatePresence>
   );
 
+  if (typeof document === 'undefined') return null;
   return createPortal(drawerContent, document.body);
 };
 
