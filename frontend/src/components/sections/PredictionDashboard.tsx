@@ -44,11 +44,10 @@ export function PredictionDashboard() {
           fetchStockQuote(symbol),
           fetchStockAnalytics(symbol)
         ]);
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
+
+
+
         // Merge history and forecast for the chart
         const formattedChartData = [
           ...forecastData.history.map((h: any) => ({
@@ -66,21 +65,19 @@ export function PredictionDashboard() {
             lower: f.lower
           }))
         ];
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
+
+
+
         setData(formattedChartData);
         setQuote(quoteData);
         setAnalytics(analyticsData);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
-<<<<<<< HEAD
-=======
+
+
         setData([]); // Clear chart on error
         setAnalytics(null);
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
       } finally {
         setLoading(false);
       }
@@ -135,17 +132,16 @@ export function PredictionDashboard() {
               <span className="hidden text-xs text-muted-foreground md:block">⌘K</span>
             </div>
             {loading && (
-<<<<<<< HEAD
-               <div className="flex items-center gap-2 px-3">
-                 <div className="h-3 w-3 animate-spin rounded-full border-2 border-electric border-t-transparent" />
-                 <span className="text-xs text-muted-foreground">Analyzing...</span>
-               </div>
-=======
+
               <div className="flex items-center gap-2 px-3">
                 <div className="h-3 w-3 animate-spin rounded-full border-2 border-electric border-t-transparent" />
                 <span className="text-xs text-muted-foreground">Analyzing...</span>
               </div>
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
+  
+              <div className="flex items-center gap-2 px-3">
+                <div className="h-3 w-3 animate-spin rounded-full border-2 border-electric border-t-transparent" />
+                <span className="text-xs text-muted-foreground">Analyzing...</span>
+              </div>
             )}
           </div>
 
@@ -161,28 +157,26 @@ export function PredictionDashboard() {
               <div className="mt-2 flex items-baseline gap-3">
                 <span className="font-display text-4xl font-semibold">${currentPrice.toLocaleString()}</span>
                 <span className={`flex items-center gap-1 ${isPositive ? 'text-emerald-trend' : 'text-red-trend'}`}>
-<<<<<<< HEAD
+
                   {isPositive ? <ArrowUp className="h-4 w-4" /> : <Activity className="h-4 w-4" />} {quote?.change?.toFixed(2) || '0.00'} ({change.toFixed(2)}%)
-=======
+
                   {isPositive ? <ArrowUp className="h-4 w-4" /> : <Activity className="h-4 w-4" />} {quote?.change?.toFixed(2) || '0.00'} ({change?.toFixed(2) || '0.00'}%)
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
                 </span>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-6">
-<<<<<<< HEAD
-              <Stat 
-                label="Predicted (Target)" 
-                value={data && data.length > 0 ? `$${data[data.length-1].predicted?.toFixed(2) || '---'}` : '---'} 
-                delta={data && data.length > 0 ? `${(((data[data.length-1].predicted || 0) - currentPrice) / currentPrice * 100).toFixed(2)}%` : '0%'} 
-                positive={(data && data.length > 0 ? data[data.length-1].predicted : 0) > currentPrice} 
-=======
+
               <Stat
                 label="Predicted (Target)"
                 value={data && data.length > 0 ? `$${data[data.length - 1].predicted?.toFixed(2) || '---'}` : '---'}
                 delta={data && data.length > 0 ? `${(((data[data.length - 1].predicted || 0) - currentPrice) / currentPrice * 100).toFixed(2)}%` : '0%'}
                 positive={(data && data.length > 0 ? data[data.length - 1].predicted : 0) > currentPrice}
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
+  
+              <Stat
+                label="Predicted (Target)"
+                value={data && data.length > 0 ? `$${data[data.length - 1].predicted?.toFixed(2) || '---'}` : '---'}
+                delta={data && data.length > 0 ? `${(((data[data.length - 1].predicted || 0) - currentPrice) / currentPrice * 100).toFixed(2)}%` : '0%'}
+                positive={(data && data.length > 0 ? data[data.length - 1].predicted : 0) > currentPrice}
               />
               <Stat label="Confidence" value="88%" delta="Medium-High" positive />
               <Stat label="Model" value="ARIMA" delta="v1.0" positive />
@@ -216,20 +210,19 @@ export function PredictionDashboard() {
                   labelStyle={{ color: "oklch(0.97 0.01 240)" }}
                 />
                 {data && data.length > 0 && (
-<<<<<<< HEAD
-                  <ReferenceLine 
-                    x={data.find((d: any) => d.actual !== null && data[data.indexOf(d) + 1]?.predicted !== null)?.day} 
-                    stroke="oklch(0.85 0.14 188 / 0.6)" 
-                    strokeDasharray="4 4" 
-                    label={{ value: "Now", fill: "oklch(0.85 0.14 188)", fontSize: 11 }} 
-=======
+
+                  <ReferenceLine
+                    x={data.find((d: any) => d.actual !== null && data[data.indexOf(d) + 1]?.predicted !== null)?.day}
+                    stroke="oklch(0.85 0.14 188 / 0.6)"
+                    strokeDasharray="4 4"
+                    label={{ value: "Now", fill: "oklch(0.85 0.14 188)", fontSize: 11 }}
+  
                   <ReferenceLine
                     x={data?.find((d: any) => d.actual !== null && data[data.indexOf(d) + 1]?.predicted !== null)?.day}
                     stroke="oklch(0.85 0.14 188 / 0.6)"
                     strokeDasharray="4 4"
                     label={{ value: "Now", fill: "oklch(0.85 0.14 188)", fontSize: 11 }}
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
-                  />
+                   />
                 )}
                 <Area type="monotone" dataKey="upper" stroke="none" fill="url(#conf)" />
                 <Area type="monotone" dataKey="lower" stroke="none" fill="oklch(0.18 0.025 254)" />

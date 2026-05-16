@@ -108,7 +108,7 @@ export function AIChatbot() {
           timestamp: new Date().toISOString(),
         };
 
-<<<<<<< HEAD
+
         setMessages((prev) => {
           const next = [...prev, assistantMessage];
           messagesRef.current = next;
@@ -129,11 +129,10 @@ export function AIChatbot() {
           messagesRef.current = next;
           return next;
         });
-=======
+
         setMessages((prev) => [...prev, assistantMessage]);
       } catch (err: any) {
         setError(err.message || "Neural link failure. Retrying...");
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
       } finally {
         setIsLoading(false);
       }
@@ -172,16 +171,16 @@ export function AIChatbot() {
                   <p className="text-[10px] uppercase tracking-widest text-electric font-medium">Neural Assistant</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-2">
-                <button 
+                <button
                   onClick={resetChat}
                   className="p-2 text-white/40 hover:text-white transition-colors"
                   title="Reset Frequency"
                 >
                   <RotateCcw className="h-4 w-4" />
                 </button>
-                <button 
+                <button
                   onClick={() => setIsOpen(false)}
                   className="p-2 text-white/40 hover:text-white transition-colors"
                 >
@@ -191,7 +190,7 @@ export function AIChatbot() {
             </div>
 
             {/* Message Area */}
-            <div 
+            <div
               ref={messageListRef}
               className="chatbot-scroll flex h-[400px] flex-col gap-2 overflow-y-auto px-5 py-6"
             >
@@ -199,11 +198,11 @@ export function AIChatbot() {
                 <ChatMessage key={i} message={msg} />
               ))}
               {isLoading && <TypingIndicator />}
-              
+
               {/* Error State */}
               {error && (
-                <motion.div 
-                  initial={{ opacity: 0 }} 
+                <motion.div
+                  initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs text-red-400"
                 >

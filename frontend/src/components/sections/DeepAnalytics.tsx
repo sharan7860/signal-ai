@@ -19,9 +19,9 @@ export function DeepAnalytics({ analytics, loading }: DeepAnalyticsProps) {
   if (loading || !analytics) return null;
 
   const { adf_test, decomposition } = analytics;
-<<<<<<< HEAD
-=======
-  
+
+
+
   if (!adf_test || !decomposition) {
     return (
       <div className="mt-12 glass-card rounded-3xl p-8 text-center text-muted-foreground">
@@ -30,7 +30,6 @@ export function DeepAnalytics({ analytics, loading }: DeepAnalyticsProps) {
     );
   }
 
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
   const isStationary = adf_test.is_stationary;
 
   const decompData = decomposition.dates.map((date: string, i: number) => ({
@@ -106,34 +105,34 @@ export function DeepAnalytics({ analytics, loading }: DeepAnalyticsProps) {
 
       {/* Subplots - Seasonal & Residual */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-         <div className="glass-card rounded-3xl p-6">
-            <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
-               <LineChart className="h-3.5 w-3.5" /> Seasonality (30d Period)
-            </div>
-            <div className="mt-4 h-[150px] w-full">
-               <ResponsiveContainer>
-                  <RechartsLineChart data={decompData}>
-                     <XAxis dataKey="date" hide />
-                     <YAxis hide domain={['auto', 'auto']} />
-                     <Line type="monotone" dataKey="seasonal" stroke="oklch(0.78 0.18 155)" strokeWidth={1.5} dot={false} />
-                  </RechartsLineChart>
-               </ResponsiveContainer>
-            </div>
-         </div>
-         <div className="glass-card rounded-3xl p-6">
-            <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
-               <LineChart className="h-3.5 w-3.5" /> Residual (Noise)
-            </div>
-            <div className="mt-4 h-[150px] w-full">
-               <ResponsiveContainer>
-                  <RechartsLineChart data={decompData}>
-                     <XAxis dataKey="date" hide />
-                     <YAxis hide domain={['auto', 'auto']} />
-                     <Line type="monotone" dataKey="residual" stroke="oklch(0.7 0.21 22)" strokeWidth={1.5} dot={false} />
-                  </RechartsLineChart>
-               </ResponsiveContainer>
-            </div>
-         </div>
+        <div className="glass-card rounded-3xl p-6">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+            <LineChart className="h-3.5 w-3.5" /> Seasonality (30d Period)
+          </div>
+          <div className="mt-4 h-[150px] w-full">
+            <ResponsiveContainer>
+              <RechartsLineChart data={decompData}>
+                <XAxis dataKey="date" hide />
+                <YAxis hide domain={['auto', 'auto']} />
+                <Line type="monotone" dataKey="seasonal" stroke="oklch(0.78 0.18 155)" strokeWidth={1.5} dot={false} />
+              </RechartsLineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="glass-card rounded-3xl p-6">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+            <LineChart className="h-3.5 w-3.5" /> Residual (Noise)
+          </div>
+          <div className="mt-4 h-[150px] w-full">
+            <ResponsiveContainer>
+              <RechartsLineChart data={decompData}>
+                <XAxis dataKey="date" hide />
+                <YAxis hide domain={['auto', 'auto']} />
+                <Line type="monotone" dataKey="residual" stroke="oklch(0.7 0.21 22)" strokeWidth={1.5} dot={false} />
+              </RechartsLineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </motion.div>
   );

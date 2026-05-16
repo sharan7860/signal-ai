@@ -12,12 +12,12 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 export function CursorEffects() {
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
-  
+
   // Spring settings for the "lag" effect
   const springConfig = { stiffness: 250, damping: 30, mass: 0.5 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
-  
+
   // Outer glow with more lag for trailing effect
   const glowConfig = { stiffness: 120, damping: 25, mass: 0.8 };
   const glowX = useSpring(mouseX, glowConfig);
@@ -30,7 +30,7 @@ export function CursorEffects() {
     const onMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
-      
+
       const target = e.target as HTMLElement | null;
       const isInteractive = !!target?.closest(
         'button, a, [data-cursor="hover"], input, textarea, [role="button"], .glass-card'
@@ -45,7 +45,7 @@ export function CursorEffects() {
 
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mousedown", onDown);
-    
+
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mousedown", onDown);
@@ -63,13 +63,13 @@ export function CursorEffects() {
           translateX: "-50%",
           translateY: "-50%",
         }}
-<<<<<<< HEAD
+
         className="pointer-events-none fixed left-0 top-0 z-[60] hidden h-64 w-64 rounded-full opacity-40 blur-3xl md:block"
-=======
+
         className="pointer-events-none fixed left-0 top-0 z-[1000000] hidden h-64 w-64 rounded-full opacity-40 blur-3xl md:block"
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
+
       >
-        <div 
+        <div
           className="h-full w-full rounded-full"
           style={{
             background: "radial-gradient(circle, rgba(139, 92, 246, 0.4), rgba(196, 181, 253, 0.1) 40%, transparent 70%)"
@@ -86,11 +86,10 @@ export function CursorEffects() {
           translateX: "-50%",
           translateY: "-50%",
         }}
-<<<<<<< HEAD
+
         className="pointer-events-none fixed left-0 top-0 z-[61] hidden md:block"
-=======
+
         className="pointer-events-none fixed left-0 top-0 z-[1000001] hidden md:block"
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
       >
         <motion.div
           animate={{
@@ -102,7 +101,7 @@ export function CursorEffects() {
           style={{
             background: "rgba(139, 92, 246, 0.03)",
             backdropFilter: "blur(2px)",
-            boxShadow: hover 
+            boxShadow: hover
               ? "0 0 20px rgba(139, 92, 246, 0.3), inset 0 0 10px rgba(139, 92, 246, 0.1)"
               : "0 0 10px rgba(255, 255, 255, 0.1)"
           }}
@@ -118,11 +117,10 @@ export function CursorEffects() {
           translateX: "-50%",
           translateY: "-50%",
         }}
-<<<<<<< HEAD
+
         className="pointer-events-none fixed left-0 top-0 z-[62] hidden md:block"
-=======
+
         className="pointer-events-none fixed left-0 top-0 z-[1000002] hidden md:block"
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
       >
         <motion.div
           animate={{

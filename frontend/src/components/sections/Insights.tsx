@@ -20,15 +20,15 @@ export function Insights() {
       setRecentCount(0);
       return;
     }
-    
+
     setLoading(true);
     try {
       const data = await fetchWatchlistNews(targetWatchlist);
-<<<<<<< HEAD
+
       const allNews = data.news || [];
-=======
+
       const rawNews = data?.news || [];
-      
+
       // Deduplicate news based on title or ID
       const seenIds = new Set();
       const allNews = rawNews.filter((n: any) => {
@@ -39,39 +39,36 @@ export function Insights() {
         seenIds.add(key);
         return true;
       });
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
-      
+
       const now = Math.floor(Date.now() / 1000);
       const twentyMinsAgo = now - 1200;
-      
+
       const freshNews = allNews.filter((n: any) => n.provider_publish_time >= twentyMinsAgo);
       setRecentCount(freshNews.length);
-      
+
       // Alert on new high-priority signals
       freshNews.forEach((signal: any) => {
-<<<<<<< HEAD
+
         if (!seenSignals.current.has(signal.id)) {
-=======
-        if (signal?.id && !seenSignals.current.has(signal.id)) {
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
-          seenSignals.current.add(signal.id);
-          playNotificationSound();
-          notifyNewSignal({
-            id: signal.id,
-            title: signal.title,
-            symbol: signal.symbol
-          });
-        }
-      });
+
+          if (signal?.id && !seenSignals.current.has(signal.id)) {
+            seenSignals.current.add(signal.id);
+            playNotificationSound();
+            notifyNewSignal({
+              id: signal.id,
+              title: signal.title,
+              symbol: signal.symbol
+            });
+          }
+        });
 
       setNews(allNews);
     } catch (err) {
       console.error("Error fetching news:", err);
-<<<<<<< HEAD
-=======
+
+
       setNews([]); // Clear news on error
       setRecentCount(0);
->>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
     } finally {
       setLoading(false);
     }
@@ -96,7 +93,7 @@ export function Insights() {
     };
 
     window.addEventListener("trader_watchlist_updated", handleUpdate);
-    
+
     // Polling interval
     const interval = setInterval(() => {
       const currentList = getSavedWatchlist();
@@ -109,7 +106,7 @@ export function Insights() {
     };
   }, [loadNews]);
 
-  const summary = news.length > 0 
+  const summary = news.length > 0
     ? `Atlas-4 detected ${recentCount} high-priority signals in the last 20 minutes. Portfolio sentiment is trending ${recentCount > 0 ? 'upwards' : 'neutral'}. Key update: ${news[0]?.title}`
     : "Analyzing global market pipelines... Add tickers to your watchlist to initiate real-time intelligence monitoring.";
 
@@ -217,20 +214,20 @@ export function Insights() {
                       {item.publisher}
                     </p>
                   </div>
-                  
+
                   <div className="mt-6 flex items-center justify-between">
-                     <div className="flex items-center gap-2">
-                        <Sparkles className="h-3.5 w-3.5 text-electric" />
-                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">AI Signal</span>
-                     </div>
-                     <a 
-                      href={item.link} 
-                      target="_blank" 
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-3.5 w-3.5 text-electric" />
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">AI Signal</span>
+                    </div>
+                    <a
+                      href={item.link}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex h-8 w-8 items-center justify-center rounded-full glass hover:bg-primary/20 transition-colors"
-                     >
-                       <ExternalLink className="h-4 w-4 text-electric" />
-                     </a>
+                    >
+                      <ExternalLink className="h-4 w-4 text-electric" />
+                    </a>
                   </div>
                 </motion.div>
               );
@@ -238,11 +235,11 @@ export function Insights() {
           )}
 
           {!loading && news.length === 0 && (
-             <div className="col-span-full flex h-64 flex-col items-center justify-center rounded-3xl border border-dashed border-white/10 opacity-40">
-                <Newspaper className="mb-4 h-12 w-12" />
-                <p className="text-sm">No live news found for your current watchlist.</p>
-                <p className="mt-2 text-[10px] uppercase tracking-widest">Try adding major tickers like AAPL, TSLA, or NVDA</p>
-             </div>
+            <div className="col-span-full flex h-64 flex-col items-center justify-center rounded-3xl border border-dashed border-white/10 opacity-40">
+              <Newspaper className="mb-4 h-12 w-12" />
+              <p className="text-sm">No live news found for your current watchlist.</p>
+              <p className="mt-2 text-[10px] uppercase tracking-widest">Try adding major tickers like AAPL, TSLA, or NVDA</p>
+            </div>
           )}
         </div>
       </div>
