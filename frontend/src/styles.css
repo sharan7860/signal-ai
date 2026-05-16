@@ -50,6 +50,12 @@
   --animate-orb-spin: orb-spin 20s linear infinite;
   --animate-fade-up: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   --animate-shimmer: shimmer 2.5s linear infinite;
+  --animate-gradient-x: gradient-x 6s ease infinite;
+}
+
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 :root {
@@ -258,6 +264,11 @@
     background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.08), transparent);
     background-size: 200% 100%;
     animation: shimmer 2.5s linear infinite;
+  }
+
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: var(--animate-gradient-x);
   }
 
   .no-scrollbar::-webkit-scrollbar {

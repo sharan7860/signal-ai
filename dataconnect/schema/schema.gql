@@ -25,7 +25,7 @@ type HistoricalPrice @table {
   volume: Int!
 }
 
-type Prediction @table {
+type recommendation @table {
   stock: Stock!
   predictionDate: Date!
   predictedPrice: Float!

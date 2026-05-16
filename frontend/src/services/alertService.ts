@@ -4,7 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000
 
 export interface Alert {
   id: string;
-  type: 'RSI' | 'MACD' | 'Sentiment' | 'Portfolio' | 'Risk' | 'Market' | 'Recommendation' | 'Prediction';
+  type: 'RSI' | 'MACD' | 'Sentiment' | 'Portfolio' | 'Risk' | 'Market' | 'Recommendation' | 'recommendation';
   symbol: string;
   severity: 'success' | 'warning' | 'danger' | 'info';
   title: string;
@@ -22,7 +22,7 @@ export interface AlertResponse {
 
 export const alertService = {
   getAlerts: async (symbol?: string): Promise<AlertResponse> => {
-    const url = symbol 
+    const url = symbol
       ? `${API_BASE_URL}/alerts/?symbol=${symbol}`
       : `${API_BASE_URL}/alerts/`;
     const response = await axios.get(url);

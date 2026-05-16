@@ -1,19 +1,10 @@
 import { motion } from "framer-motion";
-import { ArrowUp, Brain, Shield, TrendingUp } from "lucide-react";
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-} from "recharts";
-import { CountUp } from "@/components/CountUp";
-import { CircularProgress } from "@/components/CircularProgress";
 import { useState, useEffect } from "react";
+import { Brain, TrendingUp, Sparkles, RefreshCcw, Plus, Activity, Bell } from "lucide-react";
+import { HoldingCard } from "../portfolio/HoldingCard";
+import { CountUp } from "@/components/CountUp";
 import { fetchBatchInfo } from "@/services/api";
-import { Plus, Trash2, PieChart } from "lucide-react";
+import { AllocationChart } from "../portfolio/AllocationChart";
 
 const sectorColors: Record<string, string> = {
   "Technology": "var(--primary)",
@@ -24,8 +15,6 @@ const sectorColors: Record<string, string> = {
   "Energy": "#F87171",
   "Other": "#94A3B8",
 };
-
-import { PortfolioInsights } from "../portfolio/PortfolioInsights";
 
 export function Portfolio() {
   const [watchlist, setWatchlist] = useState<string[]>(() => {
@@ -72,7 +61,6 @@ export function Portfolio() {
     setWatchlist(watchlist.filter(s => s !== sym));
   };
 
-  // Calculate allocation
   const calculateAllocation = () => {
     const totals: Record<string, number> = {};
     watchlist.forEach(sym => {
@@ -93,116 +81,128 @@ export function Portfolio() {
   const allocation = calculateAllocation();
 
   return (
-    <section id="portfolio" className="relative py-24">
+    <section id="portfolio" className="relative py-16">
       <div className="mx-auto max-w-7xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-14 max-w-2xl"
+          className="mb-10 max-w-2xl"
         >
-          <div className="mb-3 text-xs uppercase tracking-widest text-electric">Portfolio Intelligence</div>
-          <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
+          <div className="mb-2 text-xs uppercase tracking-[0.2em] text-electric font-bold">Portfolio Intelligence</div>
+          <h2 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">
             AI-Driven<br /><span className="text-gradient">Portfolio Wealth.</span>
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 mb-10">
-          {/* Performance card */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="glass-card relative overflow-hidden rounded-3xl p-7 lg:col-span-2"
-          >
-             <div className="mb-6 flex items-center justify-between">
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Active Analysis Watchlist</div>
-                <div className="flex items-center gap-2">
-                   <div className="glass flex items-center gap-2 rounded-full px-4 py-1.5 border border-white/5">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.8fr_1fr] items-stretch mb-10">
+          {/* Left Panel: Performance & Watchlist */}
+          <div className="flex flex-col h-full">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="glass-card relative overflow-hidden rounded-3xl p-6 flex flex-col h-full"
+            >
+               <div className="mb-4 flex items-center justify-between">
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Active Analysis Watchlist</div>
+                  <div className="glass flex items-center gap-2 rounded-full px-3 py-1 border border-white/10 focus-within:border-electric/40 transition-colors">
                       <input 
                         value={newTicker}
                         onChange={(e) => setNewTicker(e.target.value.toUpperCase())}
                         onKeyDown={(e) => e.key === 'Enter' && addTicker()}
                         placeholder="ADD TICKER..." 
-                        className="w-24 bg-transparent text-[10px] outline-none placeholder:text-muted-foreground"
+                        className="w-24 bg-transparent text-[10px] font-bold outline-none placeholder:text-muted-foreground/50"
                       />
                       <button onClick={addTicker} className="text-electric hover:scale-110 transition-transform">
                         <Plus className="h-4 w-4" />
                       </button>
-                   </div>
-                </div>
-             </div>
+                  </div>
+               </div>
 
-             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-                {watchlist.map(sym => (
-                   <div key={sym} className="glass group relative flex flex-col items-center justify-center rounded-2xl p-4 transition-all hover:border-electric/40">
-                      <button 
-                        onClick={() => removeTicker(sym)}
-                        className="absolute -right-2 -top-2 flex h-6 w-6 scale-0 items-center justify-center rounded-full bg-red-trend/20 text-red-trend opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                      <div className="font-display text-sm font-semibold">{sym}</div>
-                      <div className="mt-1 text-[10px] text-muted-foreground">{infoMap[sym]?.sector || '---'}</div>
-                   </div>
-                ))}
-             </div>
+               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 mb-6">
+                  {watchlist.map((sym, i) => (
+                     <HoldingCard 
+                       key={sym} 
+                       symbol={sym} 
+                       info={infoMap[sym]} 
+                       onRemove={removeTicker}
+                       delay={i * 0.05}
+                     />
+                  ))}
+               </div>
 
-            <div className="mt-10 flex flex-wrap items-end justify-between gap-4 border-t border-white/5 pt-8">
-              <div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Est. Portfolio Value</div>
-                <div className="mt-1 font-display text-4xl font-semibold text-gradient">
-                  <CountUp to={142847.92} decimals={2} prefix="$" />
-                </div>
-              </div>
-              <div className="flex gap-6">
-                <Stat label="Total Assets" to={watchlist.length} />
-                <Stat label="Sectors" to={new Set(watchlist.map(s => infoMap[s]?.sector)).size} />
-              </div>
-            </div>
-          </motion.div>
+              <div className="mt-8 flex flex-wrap items-end justify-between gap-6 border-t border-white/5 pt-6">
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-1">Est. Portfolio Value</div>
+                    <div className="flex items-center gap-3">
+                       <div className="font-display text-3xl font-bold text-gradient">
+                         <CountUp to={142847.92} decimals={2} prefix="$" />
+                       </div>
+                       <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5">
+                          <div className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                          <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-wider">Health: 87/100</span>
+                       </div>
+                    </div>
+                  </div>
 
-          {/* Allocation */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="glass-card relative overflow-hidden rounded-3xl p-7"
-          >
-            <div className="flex items-center justify-between">
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">Allocation Distribution</div>
-              <PieChart className="h-4 w-4 text-electric" />
-            </div>
-            
-            <div className="mt-8 flex items-center justify-center">
-              <CircularProgress
-                segments={allocation}
-                size={180}
-                thickness={14}
-                centerLabel="Holdings"
-                centerValue={watchlist.length.toString()}
-              />
-            </div>
-            
-            <div className="mt-8 space-y-3">
-              {allocation.map((a) => (
-                <div key={a.label} className="flex items-center gap-3">
-                  <div className="h-2 w-2 rounded-full" style={{ background: a.color, boxShadow: `0 0 10px ${a.color}` }} />
-                  <div className="flex flex-1 items-center justify-between text-xs">
-                    <span className="text-foreground/85">{a.label}</span>
-                    <span className="font-mono text-muted-foreground">{a.pct}%</span>
+                  <div className="flex flex-wrap gap-2">
+                     <div className="flex items-center gap-2 rounded-lg bg-white/5 border border-white/10 px-2.5 py-1.5">
+                        <Brain className="h-3 w-3 text-electric" />
+                        <div>
+                           <div className="text-[8px] uppercase text-muted-foreground font-bold">AI Insight</div>
+                           <div className="text-[9px] font-medium">Tech exposure high</div>
+                        </div>
+                     </div>
+                     <div className="flex items-center gap-2 rounded-lg bg-white/5 border border-white/10 px-2.5 py-1.5">
+                        <RefreshCcw className="h-3 w-3 text-purple-400" />
+                        <div>
+                           <div className="text-[8px] uppercase text-muted-foreground font-bold">Rebalance</div>
+                           <div className="text-[9px] font-medium">Reduce NVDA -10%</div>
+                        </div>
+                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
 
-        {/* AI Portfolio Intelligence Metrics */}
-        <PortfolioInsights />
+                <div className="flex gap-6">
+                  <Stat label="Total Assets" to={watchlist.length} />
+                  <Stat label="Sectors" to={new Set(watchlist.map(s => infoMap[s]?.sector)).size} />
+                </div>
+              </div>
+              {/* Neural Activity Section (Moved from Right) */}
+              <div className="mt-auto border-t border-white/5 pt-6">
+                 <div className="flex items-center gap-2 mb-4 text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+                    <Bell className="h-3 w-3 text-electric" />
+                    Neural Activity
+                 </div>
+                 <div className="flex flex-wrap gap-6">
+                    <div className="flex items-center gap-3 text-[10px] text-foreground/70 group bg-white/[0.03] border border-white/5 px-3 py-2 rounded-xl transition-colors hover:bg-white/[0.05]">
+                       <div className="h-1.5 w-1.5 rounded-full bg-electric group-hover:scale-125 transition-transform shadow-[0_0_8px_var(--electric)]" />
+                       NVDA recommendation updated
+                    </div>
+                    <div className="flex items-center gap-3 text-[10px] text-foreground/70 group bg-white/[0.03] border border-white/5 px-3 py-2 rounded-xl transition-colors hover:bg-white/[0.05]">
+                       <div className="h-1.5 w-1.5 rounded-full bg-purple-400 group-hover:scale-125 transition-transform shadow-[0_0_8px_#A78BFA]" />
+                       Risk score improved
+                    </div>
+                    <div className="flex items-center gap-3 text-[10px] text-foreground/70 group bg-white/[0.03] border border-white/5 px-3 py-2 rounded-xl transition-colors hover:bg-white/[0.05]">
+                       <div className="h-1.5 w-1.5 rounded-full bg-emerald-trend group-hover:scale-125 transition-transform shadow-[0_0_8px_var(--emerald-trend)]" />
+                       Diversification target met
+                    </div>
+                 </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right Panel: Allocation Only */}
+          <div className="flex flex-col">
+            <AllocationChart 
+              allocation={allocation} 
+              watchlistCount={watchlist.length} 
+            />
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -211,7 +211,7 @@ export function Portfolio() {
 function Stat({ label, to, prefix }: { label: string; to: number; prefix?: string }) {
   return (
     <div>
-      <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-xs uppercase tracking-wider text-muted-foreground font-bold">{label}</div>
       <div className="font-display text-lg font-semibold text-electric">
         <CountUp to={to} prefix={prefix} />
       </div>

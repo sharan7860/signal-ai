@@ -62,7 +62,7 @@ const typeIcons: Record<string, React.ReactNode> = {
   Risk: <AlertTriangle size={20} />,
   Market: <Zap size={20} />,
   Recommendation: <CheckCircle2 size={20} />,
-  Prediction: <TrendingUp size={20} />,
+  recommendation: <TrendingUp size={20} />,
 };
 
 const AlertCard: React.FC<AlertCardProps> = ({ alert, onDismiss }) => {
@@ -76,9 +76,8 @@ const AlertCard: React.FC<AlertCardProps> = ({ alert, onDismiss }) => {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
-      className={`relative group rounded-2xl border p-6 transition-all duration-300 backdrop-blur-md ${style.border} ${style.bg} ${style.glow} ${
-        alert.read ? 'opacity-40 grayscale-[0.6]' : ''
-      }`}
+      className={`relative group rounded-2xl border p-6 transition-all duration-300 backdrop-blur-md ${style.border} ${style.bg} ${style.glow} ${alert.read ? 'opacity-40 grayscale-[0.6]' : ''
+        }`}
     >
       {/* Unread Indicator Dot */}
       {!alert.read && (
@@ -113,7 +112,7 @@ const AlertCard: React.FC<AlertCardProps> = ({ alert, onDismiss }) => {
           <h4 className="text-lg font-bold text-white mb-2 leading-tight tracking-tight group-hover:text-electric transition-colors">
             {alert.title}
           </h4>
-          
+
           <p className="text-sm text-white/50 leading-relaxed font-medium">
             {alert.message}
           </p>

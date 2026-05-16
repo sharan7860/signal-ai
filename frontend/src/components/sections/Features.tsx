@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
-import { Brain, BarChart3, MessageSquare, Zap, ShieldAlert, Target } from "lucide-react";
+import { Bot, Brain, LayoutDashboard, BarChart3, SearchCheck, Target } from "lucide-react";
 import { TiltCard } from "@/components/TiltCard";
 
 const features = [
-  { icon: Brain, title: "AI Predictions", body: "LSTM and transformer models forecast price action with 94%+ confidence intervals." },
-  { icon: BarChart3, title: "Technical Analysis", body: "24 indicators — RSI, MACD, MAs, Bollinger — fused into one verdict." },
-  { icon: MessageSquare, title: "Sentiment Engine", body: "Real-time NLP across 4,200 news outlets, filings and social channels." },
-  { icon: Zap, title: "Real-Time Insights", body: "Sub-second alerts when models detect regime shifts or breakout patterns." },
-  { icon: ShieldAlert, title: "Risk Detection", body: "Volatility, drawdown, and tail-risk scoring for every position you hold." },
-  { icon: Target, title: "Smart Recommendations", body: "Personalized Buy/Hold/Sell tailored to your strategy and risk tolerance." },
+  { icon: Bot, title: "Jarvis AI Assistant", body: "Your 24/7 financial co-pilot for conversational market analysis and automated technical deep-dives." },
+  { icon: Brain, title: "AI Recommendation Engine", body: "Multi-layered neural networks generating precision signals based on complex pattern recognition." },
+  { icon: LayoutDashboard, title: "Portfolio Intelligence", body: "Dynamic asset tracking with automated health scoring and risk-adjusted performance metrics." },
+  { icon: BarChart3, title: "Market Analytics", body: "Institutional-grade technical indicators fused with real-time liquidity and volume profiling." },
+  { icon: SearchCheck, title: "Explainable AI (XAI)", body: "Complete transparency into AI logic, revealing the specific indicators and signals driving every verdict." },
+  { icon: Target, title: "Decision Support", body: "Transforming raw data into actionable intelligence to help you execute trades with absolute conviction." },
 ];
 
 export function Features() {

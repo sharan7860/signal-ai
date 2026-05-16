@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import AlertCenter from "./alerts/AlertCenter";
 
 const links = [
-  { label: "Predictions", id: "dashboard" },
+  { label: "Recommendations", id: "dashboard" },
   { label: "Analytics", id: "analytics" },
   { label: "Insights", id: "insights" },
   { label: "Portfolio", id: "portfolio" },
@@ -49,7 +49,7 @@ export function Navbar() {
             <div className="absolute inset-0 rounded-lg opacity-50 blur-md" style={{ background: "var(--gradient-electric)" }} />
           </div>
           <span className="font-display text-lg font-semibold tracking-tight">
-            TRADER<span className="text-electric">AI</span>
+            TRADER <span className="text-electric">AI</span>
           </span>
         </Link>
 
