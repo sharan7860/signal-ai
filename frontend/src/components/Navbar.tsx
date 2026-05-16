@@ -2,11 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { Activity, Bell, Trash2, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { MagneticButton } from "./MagneticButton";
 import { useAuth } from "@/hooks/useAuth";
+import AlertCenter from "./alerts/AlertCenter";
 
 const links = [
-  { label: "Predictions", id: "dashboard" },
+  { label: "Recommendations", id: "dashboard" },
   { label: "Analytics", id: "analytics" },
   { label: "Insights", id: "insights" },
   { label: "Portfolio", id: "portfolio" },
@@ -17,7 +17,11 @@ export function Navbar() {
   const { user, loginWithGoogle, logout } = useAuth();
   const { scrollY } = useScroll();
   const blur = useTransform(scrollY, [0, 100], [10, 28]);
+<<<<<<< HEAD
   const bg = useTransform(scrollY, [0, 100], ["rgba(15, 15, 20, 0.25)", "rgba(15, 15, 20, 0.85)"]);
+=======
+  const bg = useTransform(scrollY, [0, 100], ["rgba(15, 15, 20, 0.25)", "rgba(15, 15, 20, 0.88)"]);
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
   const [active, setActive] = useState<string>("");
   
   // Notification State
@@ -71,16 +75,18 @@ export function Navbar() {
       className="fixed inset-x-0 top-0 z-50 border-b border-white/5"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+        {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5">
           <div className="relative grid h-8 w-8 place-items-center rounded-lg" style={{ background: "var(--gradient-electric)" }}>
             <Activity className="h-4 w-4 text-primary-foreground" />
             <div className="absolute inset-0 rounded-lg opacity-50 blur-md" style={{ background: "var(--gradient-electric)" }} />
           </div>
           <span className="font-display text-lg font-semibold tracking-tight">
-            TRADER<span className="text-electric"> AI</span>
+            TRADER <span className="text-electric">AI</span>
           </span>
         </Link>
 
+        {/* Nav links */}
         <nav className="hidden items-center gap-1 md:flex">
           {links.map((l) => {
             const isActive = active === l.id;
@@ -105,6 +111,7 @@ export function Navbar() {
           })}
         </nav>
 
+<<<<<<< HEAD
         <div className="flex items-center gap-5">
           {/* Notification Bell */}
           <div className="relative">
@@ -176,17 +183,38 @@ export function Navbar() {
           <div className="flex items-center gap-3 border-l border-white/10 pl-5">
             {!user ? (
               <button 
+=======
+        {/* Right section — alert bell always visible alongside profile */}
+        <div className="flex items-center gap-3">
+          <AlertCenter />
+
+          <div className="flex items-center gap-3 border-l border-white/10 pl-3">
+            {!user ? (
+              <button
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
                 onClick={loginWithGoogle}
                 className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:block"
               >
                 Sign in
               </button>
             ) : (
+<<<<<<< HEAD
               <div className="flex items-center gap-3">
                 {user.photoURL && (
                   <img src={user.photoURL} alt={user.displayName || "User"} className="h-7 w-7 rounded-full border border-electric/30" />
                 )}
                 <button 
+=======
+              <div className="flex items-center gap-2.5">
+                {user.photoURL && (
+                  <img
+                    src={user.photoURL}
+                    alt={user.displayName || "User"}
+                    className="h-7 w-7 rounded-full border border-electric/30"
+                  />
+                )}
+                <button
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
                   onClick={logout}
                   className="hidden text-[10px] uppercase tracking-widest text-muted-foreground transition-colors hover:text-electric md:block"
                 >

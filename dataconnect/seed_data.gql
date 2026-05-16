@@ -1,0 +1,117 @@
+mutation CreateSeedData @transaction @auth(level: USER, insecureReason: "Seed data can be created by any authenticated user for testing purposes.") {
+  user_insertMany(data: [
+    {
+      id: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+      username: "john.doe",
+      email: "john.doe@example.com",
+      createdAt: "2023-01-01T10:00:00Z",
+      firstName: "John",
+      lastName: "Doe"
+    },
+    {
+      id: "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22",
+      username: "jane.smith",
+      email: "jane.smith@example.com",
+      createdAt: "2023-01-05T11:30:00Z",
+      firstName: "Jane",
+      lastName: "Smith"
+    }
+  ])
+  stock_insertMany(data: [
+    {
+      id: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33",
+      tickerSymbol: "AAPL",
+      companyName: "Apple Inc.",
+      industry: "Technology",
+      createdAt: "2023-02-10T09:00:00Z",
+      description: "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.",
+      marketCap: "2800000000000"
+    },
+    {
+      id: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44",
+      tickerSymbol: "GOOGL",
+      companyName: "Alphabet Inc.",
+      industry: "Technology",
+      createdAt: "2023-02-15T14:00:00Z",
+      description: "Alphabet Inc. offers various products and platforms in the information technology industry.",
+      marketCap: "1700000000000"
+    }
+  ])
+  virtualPortfolio_insertMany(data: [
+    {
+      id: "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55",
+      userId: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+      portfolioName: "John's Growth Portfolio",
+      startingBalance: 10000.00,
+      createdAt: "2023-03-01T10:00:00Z",
+      description: "A portfolio focused on long-term growth stocks."
+    },
+    {
+      id: "f0eebc99-9c0b-4ef8-bb6d-6bb9bd380a66",
+      userId: "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22",
+      portfolioName: "Jane's Tech Holdings",
+      startingBalance: 15000.00,
+      createdAt: "2023-03-05T11:00:00Z",
+      description: "Investments primarily in technology companies."
+    }
+  ])
+  portfolioStock_insertMany(data: [
+    {
+      portfolioId: "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55",
+      stockId: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33",
+      quantity: 10,
+      purchasePrice: 150.25,
+      purchaseDate: "2023-03-10"
+    },
+    {
+      portfolioId: "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55",
+      stockId: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44",
+      quantity: 5,
+      purchasePrice: 1000.50,
+      purchaseDate: "2023-03-12"
+    },
+    {
+      portfolioId: "f0eebc99-9c0b-4ef8-bb6d-6bb9bd380a66",
+      stockId: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33",
+      quantity: 15,
+      purchasePrice: 155.00,
+      purchaseDate: "2023-03-15"
+    }
+  ])
+  historicalPrice_insertMany(data: [
+    {
+      stockId: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33",
+      date: "2023-04-01",
+      openPrice: 160.00,
+      closePrice: 162.50,
+      highPrice: 163.00,
+      lowPrice: 159.50,
+      volume: 10000000
+    },
+    {
+      stockId: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44",
+      date: "2023-04-01",
+      openPrice: 1100.00,
+      closePrice: 1110.25,
+      highPrice: 1115.00,
+      lowPrice: 1098.00,
+      volume: 5000000
+    }
+  ])
+  prediction_insertMany(data: [
+    {
+      stockId: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33",
+      predictionDate: "2023-04-02",
+      predictedPrice: 165.00,
+      predictionModel: "Linear Regression",
+      confidenceScore: 0.85
+    },
+    {
+      stockId: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44",
+      predictionDate: "2023-04-02",
+      predictedPrice: 1120.00,
+      predictionModel: "Neural Network",
+      confidenceScore: 0.92
+    }
+  ])
+}

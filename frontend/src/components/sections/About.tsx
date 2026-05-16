@@ -31,7 +31,7 @@ export function About() {
           <div className="mt-10 grid grid-cols-3 gap-6 border-t border-glass-border pt-8">
             <div>
               <div className="font-display text-3xl font-semibold text-foreground">12M+</div>
-              <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Predictions/day</div>
+              <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Recommendations/day</div>
             </div>
             <div>
               <div className="font-display text-3xl font-semibold text-foreground">8,400</div>

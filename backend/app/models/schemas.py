@@ -21,7 +21,11 @@ class StockDataResponse(BaseModel):
     change: float
     change_percent: float
     pe_ratio: Optional[float] = None
+<<<<<<< HEAD
     market_cap: Optional[str] = None
+=======
+    market_cap: Optional[Any] = None
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
     dividend_yield: Optional[float] = None
     timestamp: datetime
 

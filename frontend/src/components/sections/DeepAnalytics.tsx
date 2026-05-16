@@ -19,6 +19,18 @@ export function DeepAnalytics({ analytics, loading }: DeepAnalyticsProps) {
   if (loading || !analytics) return null;
 
   const { adf_test, decomposition } = analytics;
+<<<<<<< HEAD
+=======
+  
+  if (!adf_test || !decomposition) {
+    return (
+      <div className="mt-12 glass-card rounded-3xl p-8 text-center text-muted-foreground">
+        Deep technical indicators are currently unavailable for this asset.
+      </div>
+    );
+  }
+
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
   const isStationary = adf_test.is_stationary;
 
   const decompData = decomposition.dates.map((date: string, i: number) => ({

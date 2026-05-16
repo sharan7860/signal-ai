@@ -2,21 +2,61 @@ import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, RefreshCcw } from "lucide-react";
 import { AnimatedSparkline } from "@/components/AnimatedSparkline";
 import { useEffect, useState } from "react";
-import { fetchMultipleStocks } from "@/services/api";
+import { fetchTrendingStocks } from "@/services/api";
+import { Clock } from "lucide-react";
 
-const SYMBOLS = ["NVDA", "AAPL", "TSLA", "MSFT", "AMZN", "META", "GOOGL", "AMD"];
+function getMarketStatus() {
+  const now = new Date();
+  
+  // Convert current time to ET for market hours check
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    hour: 'numeric',
+    minute: 'numeric',
+    weekday: 'short',
+    hour12: false
+  });
+  
+  const parts = formatter.formatToParts(now);
+  const hour = parseInt(parts.find(p => p.type === 'hour')?.value || '0');
+  const minute = parseInt(parts.find(p => p.type === 'minute')?.value || '0');
+  const day = parts.find(p => p.type === 'weekday')?.value || '';
+  
+  const isWeekend = day === 'Sat' || day === 'Sun';
+  const totalMinutes = hour * 60 + minute;
+  const isWithinHours = totalMinutes >= (9 * 60 + 30) && totalMinutes < (16 * 60);
+  
+  const isOpen = !isWeekend && isWithinHours;
+
+  // Format full display string
+  const displayFormatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
+  });
+
+  return {
+    isOpen,
+    displayTime: displayFormatter.format(now)
+  };
+}
 
 export function MarketOverview() {
   const [stocks, setStocks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [marketStatus, setMarketStatus] = useState(getMarketStatus());
 
   const loadData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchMultipleStocks(SYMBOLS);
+      const data = await fetchTrendingStocks();
       setStocks(data);
+      setMarketStatus(getMarketStatus());
     } catch (err) {
       console.error("Failed to fetch market data:", err);
       setError("Failed to load market data. Make sure the backend is running.");
@@ -27,7 +67,9 @@ export function MarketOverview() {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 60000); // Refresh every minute
+    const interval = setInterval(() => {
+      loadData();
+    }, 60000); // Refresh every minute
     return () => clearInterval(interval);
   }, []);
 
@@ -52,6 +94,20 @@ export function MarketOverview() {
             <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
               Trending right now
             </h2>
+            <div className="mt-4 flex items-center gap-3">
+              <div className={`flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-widest ${
+                marketStatus.isOpen 
+                  ? "border-emerald-trend/30 bg-emerald-trend/5 text-emerald-trend" 
+                  : "border-red-trend/30 bg-red-trend/5 text-red-trend"
+              }`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${marketStatus.isOpen ? "bg-emerald-trend animate-pulse" : "bg-red-trend"}`} />
+                Market {marketStatus.isOpen ? "Open" : "Closed"}
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Clock className="h-3 w-3" />
+                {marketStatus.displayTime} ET
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             {loading && <RefreshCcw className="h-4 w-4 animate-spin text-muted-foreground" />}

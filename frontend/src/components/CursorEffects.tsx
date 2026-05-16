@@ -63,7 +63,11 @@ export function CursorEffects() {
           translateX: "-50%",
           translateY: "-50%",
         }}
+<<<<<<< HEAD
         className="pointer-events-none fixed left-0 top-0 z-[60] hidden h-64 w-64 rounded-full opacity-40 blur-3xl md:block"
+=======
+        className="pointer-events-none fixed left-0 top-0 z-[1000000] hidden h-64 w-64 rounded-full opacity-40 blur-3xl md:block"
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
       >
         <div 
           className="h-full w-full rounded-full"
@@ -82,7 +86,11 @@ export function CursorEffects() {
           translateX: "-50%",
           translateY: "-50%",
         }}
+<<<<<<< HEAD
         className="pointer-events-none fixed left-0 top-0 z-[61] hidden md:block"
+=======
+        className="pointer-events-none fixed left-0 top-0 z-[1000001] hidden md:block"
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
       >
         <motion.div
           animate={{
@@ -110,7 +118,11 @@ export function CursorEffects() {
           translateX: "-50%",
           translateY: "-50%",
         }}
+<<<<<<< HEAD
         className="pointer-events-none fixed left-0 top-0 z-[62] hidden md:block"
+=======
+        className="pointer-events-none fixed left-0 top-0 z-[1000002] hidden md:block"
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
       >
         <motion.div
           animate={{

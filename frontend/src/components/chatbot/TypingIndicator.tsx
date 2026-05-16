@@ -1,15 +1,50 @@
+
+import React from "react";
+import { motion } from "framer-motion";
+import { Cpu } from "lucide-react";
+
 export default function TypingIndicator() {
   return (
-    <div className="flex items-center gap-3 rounded-[28px] border border-[rgba(102,252,241,0.12)] bg-slate-950/90 px-4 py-3 shadow-[inset_0_0_18px_rgba(56,189,248,0.18)]">
-      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800/90 text-cyan-300 shadow-[0_0_24px_rgba(56,189,248,0.18)]">
-        <div className="h-2.5 w-2.5 rounded-full bg-cyan-300 animate-pulse" />
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="flex items-center gap-3 mb-4"
+    >
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-electric/20 border border-electric/30">
+        <Cpu className="h-4 w-4 text-electric animate-pulse" />
       </div>
-      <div className="flex items-center gap-2 text-sm text-slate-300">
-        <span className="inline-flex h-2.5 w-2.5 animate-[pulse_1.2s_ease-in-out_infinite] rounded-full bg-cyan-300" />
-        <span className="inline-flex h-2.5 w-2.5 animate-[pulse_1.2s_0.2s_ease-in-out_infinite] rounded-full bg-cyan-300" />
-        <span className="inline-flex h-2.5 w-2.5 animate-[pulse_1.2s_0.4s_ease-in-out_infinite] rounded-full bg-cyan-300" />
-        <span className="text-slate-400">Trader AI is typing...</span>
+
+      <div className="flex flex-col gap-1">
+        <div className="relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 px-4 py-3 shadow-lg backdrop-blur-md">
+          <div className="flex items-center gap-1.5">
+            {[0, 0.2, 0.4].map((delay) => (
+              <motion.div
+                key={delay}
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.4, 1, 0.4],
+                }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  delay,
+                }}
+                className="h-1.5 w-1.5 rounded-full bg-electric shadow-[0_0_8px_rgba(0,242,255,0.8)]"
+              />
+            ))}
+            <span className="ml-2 text-xs font-medium text-electric/80 tracking-wider uppercase">
+              Processing Signals...
+            </span>
+          </div>
+          
+          {/* Scanning line effect */}
+          <motion.div
+            animate={{ left: ["-100%", "200%"] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="absolute top-0 bottom-0 w-20 bg-gradient-to-r from-transparent via-electric/5 to-transparent skew-x-12"
+          />
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

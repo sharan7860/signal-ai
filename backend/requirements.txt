@@ -13,3 +13,7 @@ lxml>=4.9.3
 python-dateutil>=2.8.2
 pytz>=2023.3
 scipy>=1.11.4
+<<<<<<< HEAD
+=======
+httpx>=0.25.0
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231

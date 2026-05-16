@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Activity, Twitter, Github, Linkedin, ArrowRight } from "lucide-react";
+import { Activity, Instagram, Github, Linkedin, ArrowRight } from "lucide-react";
 import { MagneticButton } from "@/components/MagneticButton";
 
 export function Footer() {
@@ -21,7 +21,7 @@ export function Footer() {
               Get tomorrow's edge,<br /><span className="text-gradient">in your inbox at 6 AM.</span>
             </h3>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              Daily AI predictions, market sentiment, and high-conviction setups. Free. No spam.
+              Daily AI Recommendations, market sentiment, and high-conviction setups. Free. No spam.
             </p>
             <form className="mx-auto mt-8 flex max-w-lg flex-col items-center gap-3 sm:flex-row">
               <input
@@ -42,17 +42,23 @@ export function Footer() {
                 <Activity className="h-4 w-4 text-primary-foreground" />
               </div>
               <span className="font-display text-lg font-semibold">
-                TRADER<span className="text-electric"> AI</span>
+                TRADER <span className="text-electric">AI</span>
               </span>
             </div>
             <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-              AI-powered stock analytics, forecasting, and intelligent recommendations for the next generation of investors.
+              AI-powered stock analytics, forecasting, and intelligent Recommendations for the next generation of investors.
             </p>
             <div className="mt-6 flex items-center gap-3">
-              {[Twitter, Github, Linkedin].map((Icon, i) => (
+              {[
+                { Icon: Github, href: "https://github.com" },
+                { Icon: Linkedin, href: "https://linkedin.com" },
+                { Icon: Instagram, href: "https://instagram.com" }
+              ].map(({ Icon, href }, i) => (
                 <a
                   key={i}
-                  href="#"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="grid h-9 w-9 place-items-center rounded-full glass text-muted-foreground transition-colors hover:text-electric"
                 >
                   <Icon className="h-4 w-4" />
@@ -61,7 +67,7 @@ export function Footer() {
             </div>
           </div>
 
-          <FooterCol title="Product" links={["Predictions", "Analytics", "Insights", "Portfolio"]} />
+          <FooterCol title="Product" links={["Recommendations", "Analytics", "Insights", "Portfolio"]} />
           <FooterCol title="Company" links={["About", "Careers", "Press", "Contact"]} />
           <FooterCol title="Resources" links={["Docs", "API", "Changelog", "Status"]} />
         </div>

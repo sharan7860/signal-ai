@@ -24,7 +24,22 @@ export function Insights() {
     setLoading(true);
     try {
       const data = await fetchWatchlistNews(targetWatchlist);
+<<<<<<< HEAD
       const allNews = data.news || [];
+=======
+      const rawNews = data?.news || [];
+      
+      // Deduplicate news based on title or ID
+      const seenIds = new Set();
+      const allNews = rawNews.filter((n: any) => {
+        if (!n) return false;
+        const key = n.id || n.title;
+        if (!key) return false;
+        if (seenIds.has(key)) return false;
+        seenIds.add(key);
+        return true;
+      });
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
       
       const now = Math.floor(Date.now() / 1000);
       const twentyMinsAgo = now - 1200;
@@ -34,7 +49,11 @@ export function Insights() {
       
       // Alert on new high-priority signals
       freshNews.forEach((signal: any) => {
+<<<<<<< HEAD
         if (!seenSignals.current.has(signal.id)) {
+=======
+        if (signal?.id && !seenSignals.current.has(signal.id)) {
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
           seenSignals.current.add(signal.id);
           playNotificationSound();
           notifyNewSignal({
@@ -48,6 +67,11 @@ export function Insights() {
       setNews(allNews);
     } catch (err) {
       console.error("Error fetching news:", err);
+<<<<<<< HEAD
+=======
+      setNews([]); // Clear news on error
+      setRecentCount(0);
+>>>>>>> a2d25a3753ea3c26578227d982d2cb63f1489231
     } finally {
       setLoading(false);
     }
