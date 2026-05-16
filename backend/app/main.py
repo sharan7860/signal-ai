@@ -12,6 +12,7 @@ from app.config import settings
 from app.utils import setup_logging
 
 from app.routes import health, stocks, forecast, chat, alerts
+from app.routes import intelligence
 
 # Setup logging
 logger = setup_logging()
@@ -35,16 +36,13 @@ app.add_middleware(
     allow_headers=settings.CORS_ALLOW_HEADERS,
 )
 
-
 # Include routers
 app.include_router(health.router)
 app.include_router(stocks.router)
 app.include_router(forecast.router)
- 
-
 app.include_router(chat.router)
 app.include_router(alerts.router)
-
+app.include_router(intelligence.router)
 
 
 # Global exception handler

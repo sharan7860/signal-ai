@@ -214,8 +214,6 @@ class StockService:
 
             formatted_news = []
  
-            for item in news[:5]:  # Limit to 5 items per ticker
-  
             for item in news[:2]:  # Limit to 2 items per ticker
                  # New yfinance structure: data is nested under 'content' & 'provider'
                 content = item.get("content") or {}

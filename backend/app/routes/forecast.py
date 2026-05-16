@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException, Query
 from app.services.forecast_service import ForecastService
+from app.services.stock_service import StockService
 from typing import Optional
 
 router = APIRouter(prefix="/forecast", tags=["forecast"])
+
 
 @router.get("/{symbol}")
 async def get_stock_forecast(
@@ -20,16 +22,6 @@ async def get_stock_forecast(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
- 
-@router.get("/{symbol}/analytics")
-async def get_stock_analytics(symbol: str):
-    """
-    Get stock stationarity and decomposition analytics
-    """
-    try:
-        return ForecastService.get_analytics(symbol.upper())
-
-from app.services.stock_service import StockService
 
 @router.get("/{symbol}/analytics")
 async def get_stock_analytics(symbol: str):
@@ -41,8 +33,8 @@ async def get_stock_analytics(symbol: str):
         stats = ForecastService.get_analytics(symbol.upper())
         # Get AI-driven indicators and explanation
         ai_data = StockService.get_ai_analytics(symbol.upper())
-        
+
         # Merge them
         return {**stats, **ai_data}
-     except Exception as e:
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
