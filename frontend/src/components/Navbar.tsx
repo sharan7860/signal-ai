@@ -18,8 +18,6 @@ export function Navbar() {
   const { scrollY } = useScroll();
   const blur = useTransform(scrollY, [0, 100], [10, 28]);
 
-  const bg = useTransform(scrollY, [0, 100], ["rgba(15, 15, 20, 0.25)", "rgba(15, 15, 20, 0.85)"]);
-
   const bg = useTransform(scrollY, [0, 100], ["rgba(15, 15, 20, 0.25)", "rgba(15, 15, 20, 0.88)"]);
 
   const [active, setActive] = useState<string>("");
@@ -111,79 +109,6 @@ export function Navbar() {
           })}
         </nav>
 
-
-        <div className="flex items-center gap-5">
-          {/* Notification Bell */}
-          <div className="relative">
-            <button
-              onClick={() => setShowNotifs(!showNotifs)}
-              className={`relative flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-white/5 ${showNotifs ? 'bg-white/5 text-electric' : 'text-muted-foreground'}`}
-            >
-              <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
-              )}
-            </button>
-
-            <AnimatePresence>
-              {showNotifs && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute right-0 mt-4 w-80 overflow-hidden rounded-2xl border border-white/10 bg-[#12121A] shadow-2xl backdrop-blur-xl"
-                >
-                  <div className="flex items-center justify-between border-b border-white/5 bg-white/5 px-4 py-3">
-                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Alerts</span>
-                    <div className="flex items-center gap-3">
-                      <button onClick={markAllRead} className="text-[10px] text-electric hover:underline">Mark read</button>
-                      <button onClick={clearAll} className="text-muted-foreground hover:text-red-400">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="max-h-96 overflow-y-auto chatbot-scroll">
-                    {notifications.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-10 opacity-40">
-                        <Bell className="mb-2 h-8 w-8" />
-                        <p className="text-[10px] uppercase tracking-widest">No new alerts</p>
-                      </div>
-                    ) : (
-                      notifications.map((n, i) => (
-                        <div key={i} className={`group border-b border-white/5 px-4 py-3 transition-colors hover:bg-white/[0.03] ${!n.read ? 'bg-primary/5' : ''}`}>
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex flex-col">
-                              <span className="mb-1 text-[9px] font-bold text-electric uppercase tracking-tighter">{n.symbol}</span>
-                              <p className="line-clamp-2 text-xs leading-snug text-foreground/90">{n.title}</p>
-                            </div>
-                            <span className="shrink-0 text-[9px] text-muted-foreground">{n.time}</span>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  {notifications.length > 0 && (
-                    <div className="bg-white/5 px-4 py-2 text-center">
-                      <Link
-                        to="/"
-                        onClick={() => setShowNotifs(false)}
-                        className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground hover:text-electric transition-colors"
-                      >
-                        View all Insights
-                      </Link>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <div className="flex items-center gap-3 border-l border-white/10 pl-5">
-            {!user ? (
-              <button
-  
         {/* Right section — alert bell always visible alongside profile */}
         <div className="flex items-center gap-3">
           <AlertCenter />
@@ -191,19 +116,12 @@ export function Navbar() {
           <div className="flex items-center gap-3 border-l border-white/10 pl-3">
             {!user ? (
               <button
-                 onClick={loginWithGoogle}
+                onClick={loginWithGoogle}
                 className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:block"
               >
                 Sign in
               </button>
             ) : (
-
-              <div className="flex items-center gap-3">
-                {user.photoURL && (
-                  <img src={user.photoURL} alt={user.displayName || "User"} className="h-7 w-7 rounded-full border border-electric/30" />
-                )}
-                <button
-  
               <div className="flex items-center gap-2.5">
                 {user.photoURL && (
                   <img
@@ -213,7 +131,7 @@ export function Navbar() {
                   />
                 )}
                 <button
-                   onClick={logout}
+                  onClick={logout}
                   className="hidden text-[10px] uppercase tracking-widest text-muted-foreground transition-colors hover:text-electric md:block"
                 >
                   Sign out
@@ -223,6 +141,6 @@ export function Navbar() {
           </div>
         </div>
       </div>
-        </motion.header>
-        );
+    </motion.header>
+  );
 }
