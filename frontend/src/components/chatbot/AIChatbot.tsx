@@ -108,31 +108,18 @@ export function AIChatbot() {
           timestamp: new Date().toISOString(),
         };
 
-
-        setMessages((prev) => {
-          const next = [...prev, assistantMessage];
-          messagesRef.current = next;
-          return next;
-        });
-      } catch (error_) {
-        setError("Sorry, I couldn't connect to the AI service. Check your API key and network connection.");
-        setMessages((prev) => {
-          const next = [
-            ...prev,
-            {
-              role: "assistant" as const,
-              content:
-                "I couldn't complete your request at this time. Please verify your OpenRouter API key and try again.",
-              timestamp: new Date().toISOString(),
-            },
-          ];
-          messagesRef.current = next;
-          return next;
-        });
-
         setMessages((prev) => [...prev, assistantMessage]);
       } catch (err: any) {
         setError(err.message || "Neural link failure. Retrying...");
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant" as const,
+            content:
+              "I couldn't complete your request at this time. Please verify your OpenRouter API key and try again.",
+            timestamp: new Date().toISOString(),
+          },
+        ]);
       } finally {
         setIsLoading(false);
       }
