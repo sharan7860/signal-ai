@@ -3,7 +3,9 @@ import httpx
 import logging
 import os
 from typing import List, Dict, Any
+import re
 from app.config import settings
+from app.services.stock_service import StockService
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +14,7 @@ class ChatService:
     
     API_KEY = settings.OPENROUTER_API_KEY
     API_URL = f"{settings.OPENROUTER_API_URL}/chat/completions"
-    MODEL = "deepseek/deepseek-chat"
+    MODEL = "openrouter/free"
     
     SYSTEM_PROMPT = {
         "role": "system",
@@ -68,6 +70,10 @@ class ChatService:
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
                 response = await client.post(ChatService.API_URL, json=payload, headers=headers)
+                
+                if response.status_code != 200:
+                    logger.error(f"OpenRouter API returned {response.status_code}: {response.text[:500]}")
+                
                 response.raise_for_status()
                 data = response.json()
                 
@@ -76,6 +82,71 @@ class ChatService:
                     raise ValueError("Empty response from AI model")
                 
                 return reply.strip()
+        except httpx.HTTPStatusError as e:
+            logger.error(f"OpenRouter HTTP error {e.response.status_code}: {e.response.text[:500]}")
+            return await ChatService.get_local_fallback_response(messages)
         except Exception as e:
             logger.error(f"OpenRouter API error: {str(e)}")
-            return "I'm having trouble connecting to my neural network. Please check your OpenRouter API key or try again in a moment."
+            # Fallback to Local Brain if API fails
+            return await ChatService.get_local_fallback_response(messages)
+
+    @staticmethod
+    async def get_local_fallback_response(messages: List[Dict[str, str]]) -> str:
+        """
+        Premium local fallback that uses real stock data to answer financial queries
+        when the external AI is unavailable.
+        """
+        # Get the last user message
+        user_query = ""
+        for msg in reversed(messages):
+            if msg.get("role") == "user":
+                user_query = msg.get("content", "")
+                break
+        
+        if not user_query:
+            return "Jarvis is standing by. How can I assist your market analysis today?"
+
+        # 1. Look for stock tickers (e.g. NVDA, TSLA, AAPL)
+        symbols = re.findall(r'\b[A-Z]{2,5}\b', user_query.upper())
+        
+        # Also check for common names
+        names_map = {"TESLA": "TSLA", "NVIDIA": "NVDA", "APPLE": "AAPL", "MICROSOFT": "MSFT", "AMAZON": "AMZN", "GOOGLE": "GOOGL", "BITCOIN": "BTC-USD"}
+        for name, sym in names_map.items():
+            if name in user_query.upper():
+                symbols.append(sym)
+        
+        symbols = list(set(symbols)) # Unique
+
+        if symbols:
+            target = symbols[0]
+            try:
+                # Fetch real analytics from our StockService
+                analytics = StockService.get_ai_analytics(target)
+                quote = StockService.get_stock_quote(target)
+                
+                name = quote.get("company_name", target)
+                price = quote.get("current_price", 0)
+                change = quote.get("percentage_change", 0)
+                sentiment = analytics.get("sentiment", {}).get("status", "Neutral")
+                explanation = analytics.get("explanation", "")
+                tech_score = analytics.get("tech_score", {}).get("value", 5.0)
+
+                response = (
+                    f"I've initialized a neural scan for **{name} ({target})**.\n\n"
+                    f"Currently trading at **${price:,.2f}** ({'+' if change >= 0 else ''}{change}%).\n"
+                    f"My technical consensus is **{sentiment}** with a neural score of **{tech_score}/10**.\n\n"
+                    f"**Analysis:** {explanation}\n\n"
+                    f"I am currently operating in **Local Intelligence Mode** as my cloud neural link is being recalibrated, but I have full access to real-time market data."
+                )
+                return response
+            except Exception as e:
+                logger.error(f"Local fallback failure for {target}: {str(e)}")
+        
+        # General non-stock responses
+        if any(word in user_query.lower() for word in ["hello", "hi", "hey", "who"]):
+            return "I am Jarvis, your neural financial copilot. I analyze market signals and technical patterns to optimize your trading strategy. My cloud link is currently offline, but I can still provide deep analytics for any specific ticker you mention."
+            
+        if any(word in user_query.lower() for word in ["market", "how", "status"]):
+            return "The market is currently showing complex volatility patterns. Mention a specific ticker (e.g., 'NVDA' or 'TSLA') and I will run a local technical deep-dive for you."
+
+        return "I'm currently running on local backup processors. Please mention a stock ticker (like AAPL or NVDA) and I'll provide a real-time technical analysis for you."

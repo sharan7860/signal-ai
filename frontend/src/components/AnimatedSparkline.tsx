@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useId } from "react";
 
 interface Props {
   data: number[];
@@ -43,7 +43,7 @@ export function AnimatedSparkline({
     
   const area = path ? `${path} L ${width} ${height} L 0 ${height} Z` : "";
 
-  const id = useState(() => Math.random().toString(36).slice(2))[0];
+  const id = useId();
   const [drawn, setDrawn] = useState(!animated);
   useEffect(() => {
     if (animated) {

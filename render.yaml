@@ -2,9 +2,10 @@ services:
   - type: web
     name: ai-stock-backend
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:$PORT
-    rootDir: backend
+    region: oregon
+    buildCommand: cd signal-ai/backend && pip install -r requirements.txt
+    startCommand: cd signal-ai/backend && gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:$PORT
+    pythonVersion: 3.10
     envVars:
       - key: DEBUG
         value: "False"
@@ -13,17 +14,8 @@ services:
       - key: MONGODB_URL
         sync: false
       - key: CORS_ORIGINS
-        value: '["*"]' # Update this after frontend is deployed
-
-  - type: web
-    name: ai-stock-frontend
-    env: static
-    buildCommand: npm install && npm run build
-    publishDir: dist
-    rootDir: frontend
-    envVars:
-      - key: VITE_API_BASE_URL
-        fromService:
-          name: ai-stock-backend
-          type: web
-          property: host
+        value: '["https://signal-ai.vercel.app"]'
+      - key: API_HOST
+        value: "0.0.0.0"
+      - key: API_PORT
+        value: "8000"

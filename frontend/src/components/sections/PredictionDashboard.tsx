@@ -106,6 +106,7 @@ export function PredictionDashboard() {
                 value={symbol}
                 onChange={(e) => setSymbol(e.target.value.toUpperCase())}
                 placeholder="Search symbol (e.g. NVDA, AAPL)"
+                onFocus={(e) => e.currentTarget.select()}
                 className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
               />
               <span className="hidden text-xs text-muted-foreground md:block">⌘K</span>

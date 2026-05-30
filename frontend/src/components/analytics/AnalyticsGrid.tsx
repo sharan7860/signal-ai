@@ -136,6 +136,7 @@ export function AnalyticsGrid() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value.toUpperCase())}
                 placeholder="Search Ticker..."
+                onFocus={(e) => e.currentTarget.select()}
                 className="bg-[#12121A] border border-white/10 rounded-xl px-4 py-2 pr-10 text-sm font-semibold focus:outline-none focus:border-electric transition-all w-48 placeholder:text-muted-foreground/30"
               />
               <button 

@@ -141,6 +141,7 @@ export function Hero() {
                 value={ticker}
                 onChange={(e) => setTicker(e.target.value)}
                 placeholder="Enter ticker (e.g. AAPL)"
+                onFocus={(e) => e.currentTarget.select()}
                 className="relative w-full rounded-xl border border-white/10 bg-slate-950/50 px-5 py-4 text-sm font-medium text-white placeholder:text-white/20 focus:border-electric/50 focus:outline-none focus:ring-0 transition-all"
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">

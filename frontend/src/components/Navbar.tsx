@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Activity, Bell, Trash2, CheckCircle2 } from "lucide-react";
+import { Activity, Bell, Trash2, CheckCircle2, User as UserIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import AlertCenter from "./alerts/AlertCenter";
@@ -21,6 +21,11 @@ export function Navbar() {
   const bg = useTransform(scrollY, [0, 100], ["rgba(15, 15, 20, 0.25)", "rgba(15, 15, 20, 0.88)"]);
 
   const [active, setActive] = useState<string>("");
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [user?.photoURL]);
 
   // Notification State
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -123,12 +128,23 @@ export function Navbar() {
               </button>
             ) : (
               <div className="flex items-center gap-2.5">
-                {user.photoURL && (
+                {user.photoURL && !imgError ? (
                   <img
                     src={user.photoURL}
                     alt={user.displayName || "User"}
-                    className="h-7 w-7 rounded-full border border-electric/30"
+                    onError={() => setImgError(true)}
+                    className="h-7 w-7 rounded-full border border-electric/30 object-cover"
                   />
+                ) : (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full border border-electric/30 bg-slate-900/80 text-electric shadow-[0_0_10px_rgba(0,242,255,0.15)]">
+                    {user.displayName ? (
+                      <span className="text-xs font-bold uppercase tracking-wider">
+                        {user.displayName.charAt(0)}
+                      </span>
+                    ) : (
+                      <UserIcon className="h-4 w-4" />
+                    )}
+                  </div>
                 )}
                 <button
                   onClick={logout}

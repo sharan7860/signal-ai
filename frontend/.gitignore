@@ -1,6 +1,9 @@
 node_modules
 dist
 .env
+.env.local
+.env.*.local
+.env.prod.local
 .vercel
 .wrangler
 .github
