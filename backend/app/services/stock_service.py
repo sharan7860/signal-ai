@@ -6,8 +6,38 @@ import pandas as pd
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 import logging
+from functools import wraps
+import signal
+import threading
 
 logger = logging.getLogger(__name__)
+
+
+def timeout_handler(seconds=5):
+    """Decorator to add timeout to functions"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            result = [None]
+            exception = [None]
+            
+            def target():
+                try:
+                    result[0] = func(*args, **kwargs)
+                except Exception as e:
+                    exception[0] = e
+            
+            thread = threading.Thread(target=target, daemon=True)
+            thread.start()
+            thread.join(timeout=seconds)
+            
+            if exception[0]:
+                raise exception[0]
+            if result[0] is None and thread.is_alive():
+                raise TimeoutError(f"Function {func.__name__} timed out after {seconds} seconds")
+            return result[0]
+        return wrapper
+    return decorator
 
 
 class StockService:
@@ -101,71 +131,86 @@ class StockService:
         Fetch comprehensive stock quote with real data from yfinance.
         """
         symbol = symbol.upper()
-        try:
-            ticker = yf.Ticker(symbol)
-            # Fetch 1 day of intraday data if possible
-            hist = ticker.history(period="1d", interval="5m")
-            
-            if hist.empty:
-                # Fallback to 5 days of hourly data if intraday is unavailable
-                hist = ticker.history(period="5d", interval="1h")
-            
-            if hist.empty:
-                raise ValueError(f"No data available for symbol {symbol}")
+        result = [None]
+        exception = [None]
+        
+        def fetch_data():
+            try:
+                ticker = yf.Ticker(symbol)
+                # Fetch 1 day of intraday data if possible
+                hist = ticker.history(period="1d", interval="5m")
+                
+                if hist.empty:
+                    # Fallback to 5 days of hourly data if intraday is unavailable
+                    hist = ticker.history(period="5d", interval="1h")
+                
+                if hist.empty:
+                    raise ValueError(f"No data available for symbol {symbol}")
 
-            info = ticker.info
-            latest = hist.iloc[-1]
-            
-            current_price = info.get("currentPrice") or float(latest["Close"])
-            previous_close = info.get("regularMarketPreviousClose") or (hist["Close"].iloc[-2] if len(hist) > 1 else current_price)
-            
-            percentage_change = info.get("regularMarketChangePercent")
-            if percentage_change is None:
-                percentage_change = ((current_price - previous_close) / previous_close) * 100 if previous_close else 0
+                info = ticker.info
+                latest = hist.iloc[-1]
+                
+                current_price = info.get("currentPrice") or float(latest["Close"])
+                previous_close = info.get("regularMarketPreviousClose") or (hist["Close"].iloc[-2] if len(hist) > 1 else current_price)
+                
+                percentage_change = info.get("regularMarketChangePercent")
+                if percentage_change is None:
+                    percentage_change = ((current_price - previous_close) / previous_close) * 100 if previous_close else 0
 
-            historical_closes = [
-                {"date": date.strftime("%Y-%m-%d %H:%M"), "close": float(row["Close"])}
-                for date, row in hist.iterrows()
-            ]
+                historical_closes = [
+                    {"date": date.strftime("%Y-%m-%d %H:%M"), "close": float(row["Close"])}
+                    for date, row in hist.iterrows()
+                ]
 
-            return {
-                "symbol": symbol,
-                "current_price": round(float(current_price), 2),
-                "open_price": round(float(info.get("open", latest["Open"])), 2),
-                "high_price": round(float(info.get("dayHigh", latest["High"])), 2),
-                "low_price": round(float(info.get("dayLow", latest["Low"])), 2),
-                "volume": int(info.get("volume", latest["Volume"])),
-                "historical_closes": historical_closes,
-                "timestamp": datetime.utcnow(),
-                "company_name": info.get("longName", symbol),
-                "percentage_change": round(float(percentage_change), 2),
-            }
-        except Exception as e:
-            logger.warning(f"get_stock_quote real data fetch failed for {symbol}: {str(e)}")
-            import random
-            base_prices = {"AAPL": 192.42, "NVDA": 903.15, "TSLA": 174.50, "MSFT": 422.10, "AMZN": 186.30, "META": 475.20, "GOOGL": 152.10, "AMD": 164.80}
-            base = base_prices.get(symbol, 100)
-            current = base + random.uniform(-1, 1)
-            
-            hist_data = []
-            for i in range(20):
-                hist_data.append({
-                    "date": (datetime.now()).strftime("%H:%M"),
-                    "close": current + random.uniform(-2, 2)
-                })
+                result[0] = {
+                    "symbol": symbol,
+                    "current_price": round(float(current_price), 2),
+                    "open_price": round(float(info.get("open", latest["Open"])), 2),
+                    "high_price": round(float(info.get("dayHigh", latest["High"])), 2),
+                    "low_price": round(float(info.get("dayLow", latest["Low"])), 2),
+                    "volume": int(info.get("volume", latest["Volume"])),
+                    "historical_closes": historical_closes,
+                    "timestamp": datetime.utcnow(),
+                    "company_name": info.get("longName", symbol),
+                    "percentage_change": round(float(percentage_change), 2),
+                }
+            except Exception as e:
+                exception[0] = e
+        
+        # Run fetch in thread with 5 second timeout
+        thread = threading.Thread(target=fetch_data, daemon=True)
+        thread.start()
+        thread.join(timeout=5)
+        
+        # Return real data if successful
+        if result[0] is not None:
+            return result[0]
+        
+        # If thread is still alive or exception occurred, use fallback
+        logger.warning(f"get_stock_quote real data fetch failed/timed out for {symbol}")
+        import random
+        base_prices = {"AAPL": 192.42, "NVDA": 903.15, "TSLA": 174.50, "MSFT": 422.10, "AMZN": 186.30, "META": 475.20, "GOOGL": 152.10, "AMD": 164.80}
+        base = base_prices.get(symbol, 100)
+        current = base + random.uniform(-1, 1)
+        hist_data = []
+        for i in range(20):
+            hist_data.append({
+                "date": (datetime.now()).strftime("%H:%M"),
+                "close": current + random.uniform(-2, 2)
+            })
 
-            return {
-                "symbol": symbol,
-                "current_price": round(current, 2),
-                "open_price": round(current - random.uniform(0, 2), 2),
-                "high_price": round(current + random.uniform(0, 3), 2),
-                "low_price": round(current - random.uniform(0, 3), 2),
-                "volume": random.randint(1000000, 50000000),
-                "historical_closes": hist_data,
-                "timestamp": datetime.utcnow(),
-                "company_name": f"{symbol} Corp",
-                "percentage_change": round(random.uniform(-2, 2), 2),
-            }
+        return {
+            "symbol": symbol,
+            "current_price": round(current, 2),
+            "open_price": round(current - random.uniform(0, 2), 2),
+            "high_price": round(current + random.uniform(0, 3), 2),
+            "low_price": round(current - random.uniform(0, 3), 2),
+            "volume": random.randint(1000000, 50000000),
+            "historical_closes": hist_data,
+            "timestamp": datetime.utcnow(),
+            "company_name": f"{symbol} Corp",
+            "percentage_change": round(random.uniform(-2, 2), 2),
+        }
 
     @staticmethod
     def get_stock_info(symbol: str) -> Dict[str, Any]:
