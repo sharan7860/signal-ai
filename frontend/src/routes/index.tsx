@@ -11,8 +11,8 @@ import { Insights } from "@/components/sections/Insights";
 import { Portfolio } from "@/components/sections/Portfolio";
 import { Features } from "@/components/sections/Features";
 import { About } from "@/components/sections/About";
-import { Testimonials } from "@/components/sections/Testimonials";
 import { Footer } from "@/components/sections/Footer";
+import { MarketProvider } from "@/components/MarketProvider";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,13 +21,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "AI-powered stock analytics, forecasting and intelligent Recommendations. Built for the next generation of investors.",
+          "AI-powered stock analytics, forecasting and intelligent recommendations. Built for the next generation of investors.",
       },
       { property: "og:title", content: "TRADER AI — Predict Smarter. Trade Better." },
       {
         property: "og:description",
-        content:
-          "AI-powered stock analytics, forecasting and intelligent Recommendations.",
+        content: "AI-powered stock analytics, forecasting and intelligent recommendations.",
       },
     ],
   }),
@@ -36,23 +35,24 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
-      <FloatingBlobs />
-      <ParticlesBackground />
-      <CursorEffects />
-      <Navbar />
-      <main className="relative z-10">
-        <Hero />
-        <MarketOverview />
-        <PredictionDashboard />
-        <Analytics />
-        <Insights />
-        <Portfolio />
-        <Features />
-        <About />
-        <Testimonials />
-      </main>
-      <Footer />
-    </div>
+    <MarketProvider>
+      <div className="relative min-h-screen overflow-x-hidden">
+        <FloatingBlobs />
+        <ParticlesBackground />
+        <CursorEffects />
+        <Navbar />
+        <main className="relative z-10">
+          <Hero />
+          <MarketOverview />
+          <PredictionDashboard />
+          <Analytics />
+          <Insights />
+          <Portfolio />
+          <Features />
+          <About />
+        </main>
+        <Footer />
+      </div>
+    </MarketProvider>
   );
 }

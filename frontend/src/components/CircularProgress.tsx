@@ -68,9 +68,7 @@ export function CircularProgress({
             {centerLabel}
           </div>
         )}
-        {centerValue && (
-          <div className="font-display text-2xl font-semibold">{centerValue}</div>
-        )}
+        {centerValue && <div className="font-display text-2xl font-semibold">{centerValue}</div>}
       </div>
     </div>
   );

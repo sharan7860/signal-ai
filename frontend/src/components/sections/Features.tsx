@@ -1,14 +1,38 @@
 import { motion } from "framer-motion";
-import { Bot, Brain, LayoutDashboard, BarChart3, SearchCheck, Target } from "lucide-react";
-import { TiltCard } from "@/components/TiltCard";
+import { Brain, BarChart3, MessageSquare, Zap, ShieldAlert, Target } from "lucide-react";
+import { TiltCard } from "../TiltCard";
 
 const features = [
-  { icon: Bot, title: "Jarvis AI Assistant", body: "Your 24/7 financial co-pilot for conversational market analysis and automated technical deep-dives." },
-  { icon: Brain, title: "AI Recommendation Engine", body: "Multi-layered neural networks generating precision signals based on complex pattern recognition." },
-  { icon: LayoutDashboard, title: "Portfolio Intelligence", body: "Dynamic asset tracking with automated health scoring and risk-adjusted performance metrics." },
-  { icon: BarChart3, title: "Market Analytics", body: "Institutional-grade technical indicators fused with real-time liquidity and volume profiling." },
-  { icon: SearchCheck, title: "Explainable AI (XAI)", body: "Complete transparency into AI logic, revealing the specific indicators and signals driving every verdict." },
-  { icon: Target, title: "Decision Support", body: "Transforming raw data into actionable intelligence to help you execute trades with absolute conviction." },
+  {
+    icon: Brain,
+    title: "Price Projections",
+    body: "Explore a transparent projection based on recent historical returns and volatility.",
+  },
+  {
+    icon: BarChart3,
+    title: "Technical Analysis",
+    body: "Inspect RSI, MACD and moving averages calculated from the selected stock history.",
+  },
+  {
+    icon: MessageSquare,
+    title: "AI Assistant",
+    body: "Ask questions about technical indicators, market concepts and diversification.",
+  },
+  {
+    icon: Zap,
+    title: "Stock Search",
+    body: "Search tickers and refresh the latest available market data with clear timestamps.",
+  },
+  {
+    icon: ShieldAlert,
+    title: "Portfolio Tracking",
+    body: "Save share quantities in your browser and estimate their current value by currency.",
+  },
+  {
+    icon: Target,
+    title: "Explained Signals",
+    body: "See which technical rules support each Buy, Hold or Sell signal.",
+  },
 ];
 
 export function Features() {
@@ -41,7 +65,10 @@ export function Features() {
                 className="group"
               >
                 <TiltCard className="h-full p-7">
-                  <div className="grid h-12 w-12 place-items-center rounded-2xl" style={{ background: "var(--gradient-electric)" }}>
+                  <div
+                    className="grid h-12 w-12 place-items-center rounded-2xl"
+                    style={{ background: "var(--gradient-electric)" }}
+                  >
                     <Icon className="h-5 w-5 text-primary-foreground" />
                   </div>
                   <h3 className="mt-6 font-display text-xl font-semibold">{f.title}</h3>

@@ -23,11 +23,13 @@ export function CountUp({
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
   const value = useMotionValue(from);
-  const display = useTransform(value, (v) =>
-    `${prefix}${v.toLocaleString("en-US", {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    })}${suffix}`,
+  const display = useTransform(
+    value,
+    (v) =>
+      `${prefix}${v.toLocaleString("en-US", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })}${suffix}`,
   );
 
   useEffect(() => {

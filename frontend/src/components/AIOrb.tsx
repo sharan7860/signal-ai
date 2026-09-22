@@ -2,10 +2,7 @@ import { motion } from "framer-motion";
 
 export function AIOrb({ size = 220 }: { size?: number }) {
   return (
-    <div
-      className="relative"
-      style={{ width: size, height: size }}
-    >
+    <div className="relative" style={{ width: size, height: size }}>
       {/* Outer rings */}
       <motion.div
         className="absolute inset-0 rounded-full border border-glass-border"
@@ -13,7 +10,8 @@ export function AIOrb({ size = 220 }: { size?: number }) {
         transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
         style={{
           borderColor: "oklch(0.85 0.14 188 / 0.3)",
-          boxShadow: "0 0 50px oklch(0.85 0.14 188 / 0.4) inset, 0 0 60px oklch(0.85 0.14 188 / 0.4)",
+          boxShadow:
+            "0 0 50px oklch(0.85 0.14 188 / 0.4) inset, 0 0 60px oklch(0.85 0.14 188 / 0.4)",
         }}
       >
         <div className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-electric shadow-[0_0_20px_var(--electric)]" />

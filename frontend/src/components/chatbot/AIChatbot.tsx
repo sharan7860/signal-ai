@@ -1,250 +1,179 @@
-
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";
 import TypingIndicator from "./TypingIndicator";
 import { JarvisAssistant } from "./JarvisAssistant";
-import { sendChatMessage, type ChatMessageType } from "@/services/chatService";
-import { Sparkles, X, RotateCcw } from "lucide-react";
+import { fetchAIResponse, type ChatMessageType } from "@/services/aiService";
 
-const STORAGE_KEY = "jarvis-ai-session-history";
-const INITIAL_MESSAGES: ChatMessageType[] = [
-  {
-    role: "assistant",
-    content: "Greetings. I am Jarvis, your AI financial copilot. How can I assist your market analysis today?",
-    timestamp: new Date().toISOString(),
-  },
-];
+const STORAGE_KEY = "trader-ai-assistant-messages";
+const welcome = (): ChatMessageType => ({
+  role: "assistant",
+  content:
+    "Welcome to Trader AI. Ask about stock analysis, diversification, or technical indicators. For current prices, use the market dashboard.",
+  timestamp: new Date().toISOString(),
+});
 
-const SUGGESTED_PROMPTS = [
-  "Analyze Tesla stock trend",
-  "Top dividend stocks 2026",
-  "Explain RSI indicator",
-  "Evaluate NVDA risk",
-  "Evaluate NVDA risk",
-];
+function validMessages(value: unknown): value is ChatMessageType[] {
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(
+      (message) =>
+        message &&
+        (message.role === "user" || message.role === "assistant") &&
+        typeof message.content === "string" &&
+        typeof message.timestamp === "string" &&
+        Number.isFinite(Date.parse(message.timestamp)),
+    )
+  );
+}
 
 export function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessageType[]>(INITIAL_MESSAGES);
+  const [messages, setMessages] = useState<ChatMessageType[]>([]);
+  const [ready, setReady] = useState(false);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const messageListRef = useRef<HTMLDivElement | null>(null);
+  const messageListRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<ChatMessageType[]>([]);
+  const sendingRef = useRef(false);
 
-  // Persistence: Load from Session Storage
   useEffect(() => {
-    const saved = sessionStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setMessages(parsed);
-        }
-      } catch (e) {
-        console.error("Failed to load chat history");
-      }
+    let initial = [welcome()];
+    try {
+      const saved: unknown = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "null");
+      if (validMessages(saved)) initial = saved.slice(-100);
+    } catch {
+      /* Storage can be unavailable in private browsing. */
     }
+    messagesRef.current = initial;
+    setMessages(initial);
+    setReady(true);
   }, []);
 
-  const chatbotRef = useRef<HTMLDivElement | null>(null);
-
-  // Persistence: Save to Session Storage
   useEffect(() => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-    // Auto-scroll
-    if (messageListRef.current) {
-      messageListRef.current.scrollTo({
+    if (!ready) return;
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-100)));
+    } catch {
+      /* Chat remains usable without browser storage. */
+    }
+  }, [messages, ready]);
+
+  useEffect(() => {
+    if (isOpen)
+      messageListRef.current?.scrollTo({
         top: messageListRef.current.scrollHeight,
         behavior: "smooth",
       });
-    }
-  }, [messages]);
+  }, [messages, isOpen, isLoading]);
 
-  // Click Outside to Close
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (chatbotRef.current && !chatbotRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
+    const open = () => setIsOpen(true);
+    window.addEventListener("open-trader-chat", open);
+    return () => window.removeEventListener("open-trader-chat", open);
+  }, []);
 
-    if (isOpen) {
-      // Small delay to prevent the opening click from triggering the close
-      const timer = setTimeout(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-      }, 10);
-      return () => {
-        clearTimeout(timer);
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }
-  }, [isOpen]);
-
-  const handleSend = useCallback(
-    async (text: string = inputText) => {
-      const val = text.trim();
-      if (!val || isLoading) return;
-
-      setError(null);
-      const userMessage: ChatMessageType = {
+  const handleSend = useCallback(async (value: string) => {
+    if (!value.trim() || sendingRef.current) return;
+    sendingRef.current = true;
+    setError(null);
+    const previous = messagesRef.current;
+    const next: ChatMessageType[] = [
+      ...previous,
+      {
         role: "user",
-        content: val,
+        content: value.trim(),
         timestamp: new Date().toISOString(),
-      };
-
-      setMessages((prev) => [...prev, userMessage]);
-      setInputText("");
-      setIsLoading(true);
-
-      try {
-        // We pass the full history to the backend for conversational memory
-        const currentHistory = [...messages, userMessage];
-        const reply = await sendChatMessage(currentHistory);
-
-        const assistantMessage: ChatMessageType = {
+      },
+    ];
+    messagesRef.current = next;
+    setMessages(next);
+    setInputText("");
+    setIsLoading(true);
+    try {
+      const content = await fetchAIResponse(next);
+      const complete: ChatMessageType[] = [
+        ...next,
+        {
           role: "assistant",
-          content: reply,
+          content,
           timestamp: new Date().toISOString(),
-        };
-
-        setMessages((prev) => [...prev, assistantMessage]);
-      } catch (err: any) {
-        console.error("Chat Error:", err);
-        setError(err.message || "Neural link failure. Check your connection.");
-        
-        const errorMessage: ChatMessageType = {
-          role: "assistant",
-          content: "I couldn't complete your request at this time. Please verify your OpenRouter API key and try again.",
-          timestamp: new Date().toISOString(),
-        };
-        
-        setMessages((prev) => [...prev, errorMessage]);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [inputText, isLoading, messages]
-  );
-
-  const resetChat = () => {
-    setMessages(INITIAL_MESSAGES);
-    sessionStorage.removeItem(STORAGE_KEY);
-  };
+        },
+      ].slice(-100) as ChatMessageType[];
+      messagesRef.current = complete;
+      setMessages(complete);
+    } catch (cause) {
+      setError(
+        cause instanceof Error ? cause.message : "Unable to send your message. Please retry.",
+      );
+      messagesRef.current = previous;
+      setMessages(previous);
+      setInputText(value);
+    } finally {
+      sendingRef.current = false;
+      setIsLoading(false);
+    }
+  }, []);
 
   return (
-    <div ref={chatbotRef} className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4 sm:bottom-8 sm:right-8">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 sm:bottom-8 sm:right-8">
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.95, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: 20, scale: 0.95, filter: "blur(10px)" }}
-            className="w-[min(calc(100vw-2rem),400px)] overflow-hidden rounded-[2.5rem] border border-white/10 bg-slate-950/80 shadow-[0_20px_50px_rgba(0,0,0,0.5),0_0_30px_rgba(0,242,255,0.1)] backdrop-blur-2xl"
+          <motion.section
+            aria-label="Market Copilot"
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.96 }}
+            className="glass-card flex max-h-[calc(100dvh-10rem)] w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-3xl bg-slate-950/95 shadow-2xl backdrop-blur-xl sm:w-[420px]"
           >
-            {/* Header */}
-            <div className="relative flex items-center justify-between border-b border-white/5 bg-white/5 px-6 py-5">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-electric to-purple-600 p-[1px]">
-                    <div className="flex h-full w-full items-center justify-center rounded-[11px] bg-slate-950">
-                      <Sparkles className="h-5 w-5 text-electric" />
-                    </div>
-                  </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-slate-950 bg-emerald-trend shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-white">Jarvis</h3>
-                  <p className="text-[10px] uppercase tracking-widest text-electric font-medium">Neural Assistant</p>
-                </div>
+            <div className="flex items-center justify-between border-b border-cyan-300/15 px-5 py-4">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-cyan-300">Trader AI</p>
+                <h2 className="mt-1 text-lg font-semibold text-white">Market Copilot</h2>
               </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={resetChat}
-                  className="p-2 text-white/40 hover:text-white transition-colors"
-                  title="Reset Frequency"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-2 text-white/40 hover:text-white transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                aria-label="Close chat"
+                className="rounded px-3 py-2 text-cyan-100 focus-visible:outline focus-visible:outline-cyan-300"
+              >
+                ✕
+              </button>
             </div>
-
-            {/* Message Area */}
             <div
               ref={messageListRef}
-              className="chatbot-scroll flex h-[400px] flex-col gap-2 overflow-y-auto px-5 py-6"
+              role="log"
+              aria-label="Conversation"
+              aria-live="polite"
+              className="chatbot-scroll flex min-h-0 flex-col gap-3 overflow-y-auto px-4 py-4"
             >
-              {messages.map((msg, i) => (
-                <ChatMessage key={i} message={msg} />
+              {messages.map((message, index) => (
+                <ChatMessage key={index} message={message} />
               ))}
               {isLoading && <TypingIndicator />}
-
-              {/* Error State */}
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs text-red-400"
-                >
-                  {error}
-                </motion.div>
-              )}
             </div>
-
-            {/* Suggestions */}
-            {messages.length <= 1 && (
-              <div className="px-5 pb-2">
-                <p className="mb-2 text-[10px] uppercase tracking-widest text-muted-foreground font-semibold px-1">Suggested Protocols</p>
-                <div className="flex flex-wrap gap-2">
-                  {SUGGESTED_PROMPTS.map((prompt) => (
-                    <button
-                      key={prompt}
-                      onClick={() => handleSend(prompt)}
-                      className="rounded-full border border-white/5 bg-white/5 px-3 py-1.5 text-[10px] text-foreground hover:bg-electric/10 hover:border-electric/30 transition-all"
-                    >
-                      {prompt}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            {error && (
+              <p
+                role="alert"
+                className="mx-4 mb-3 rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-200"
+              >
+                {error}
+              </p>
             )}
-
-            {/* Input Area */}
-            <div className="border-t border-white/5 bg-white/5 p-4">
+            <div className="border-t border-cyan-300/15 px-4 py-4">
               <ChatInput
                 value={inputText}
                 onChange={setInputText}
-                onSend={() => handleSend()}
-                disabled={isLoading}
+                onSend={() => handleSend(inputText)}
+                disabled={isLoading || !ready}
               />
-              <p className="mt-2 text-center text-[8px] uppercase tracking-[0.3em] text-white/20">
-                Encrypted Neural Link · Active
-              </p>
             </div>
-          </motion.div>
+          </motion.section>
         )}
       </AnimatePresence>
-
-      <div className="relative">
-        <JarvisAssistant isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
-        {!isOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-electric text-[10px] font-bold text-black shadow-[0_0_15px_rgba(0,242,255,0.6)]"
-          >
-            1
-          </motion.div>
-        )}
-      </div>
+      <JarvisAssistant isOpen={isOpen} onToggle={() => setIsOpen((state) => !state)} />
     </div>
   );
 }

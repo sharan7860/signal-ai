@@ -33,7 +33,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: { error: unknown; reset: () => void }) {
   console.error(error);
   const router = useRouter();
 
@@ -74,10 +74,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "TRADER AI" },
-      { name: "description", content: "AI-powered stock analytics, forecasting and intelligent Recommendations." },
+      {
+        name: "description",
+        content: "AI-powered stock analytics, forecasting and intelligent recommendations.",
+      },
       { name: "author", content: "TRADER AI" },
       { property: "og:title", content: "TRADER AI" },
-      { property: "og:description", content: "AI-powered stock analytics and Recommendations." },
+      { property: "og:description", content: "AI-powered stock analytics and predictions." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -104,15 +107,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body suppressHydrationWarning>
+      <body>
         {children}
         <Scripts />
       </body>
     </html>
   );
 }
-
-import { Toaster } from "sonner";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
@@ -121,7 +122,6 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Outlet />
       <AIChatbot />
-      <Toaster position="top-center" theme="dark" closeButton />
     </QueryClientProvider>
   );
 }

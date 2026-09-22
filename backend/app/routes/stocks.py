@@ -1,218 +1,75 @@
-"""
-Stock analysis endpoints
-"""
-from fastapi import APIRouter, HTTPException
-from app.models import StockSymbolRequest, StockDataResponse, StockQuoteResponse, AIAnalysisRequest, AIAnalysisResponse
-from app.services import StockService, AIAnalysisService
-from datetime import datetime
+"""Synchronous market calls run in FastAPI's worker thread pool."""
+from datetime import datetime, timezone
 import logging
-from typing import List
+import re
+from typing import Annotated
 
-logger = logging.getLogger(__name__)
+from fastapi import APIRouter, HTTPException, Path
+from app.config import settings
+from app.models import StockSymbolRequest, StockDataResponse, StockQuoteResponse, AIAnalysisRequest, AIAnalysisResponse
+from app.models.schemas import Period
+from app.services import StockService, AIAnalysisService
 
 router = APIRouter(tags=["Stocks"])
+logger = logging.getLogger(__name__)
+Symbol = Annotated[str, Path(min_length=1, max_length=20, pattern=r"^[A-Za-z0-9.^=-]+$")]
 
 
-@router.get("/stock/{symbol}", response_model=StockQuoteResponse, tags=["Stock Quote"])
-def get_stock_quote(symbol: str):
-    """
-    Get stock quote with current price and historical close prices
-    """
+def market_call(operation):
     try:
-        if not symbol or len(symbol) > 10:
-            raise ValueError("Invalid symbol format")
-
-        data = StockService.get_stock_quote(symbol.upper(), period="3mo")
-        return StockQuoteResponse(**data)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Invalid symbol: {str(e)}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching stock quote: {str(e)}")
+        return operation()
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except Exception as exc:
+        logger.exception("Market provider request failed")
+        raise HTTPException(status_code=502, detail="Market data is temporarily unavailable. Please try again.") from exc
 
 
-# Legacy API endpoints with /api/stocks prefix
+@router.get("/stock/{symbol}", response_model=StockQuoteResponse)
+@router.get("/api/stocks/quote/{symbol}", response_model=StockQuoteResponse)
+def get_stock_quote(symbol: Symbol, period: Period = "3mo"):
+    return market_call(lambda: StockService.get_stock_quote(symbol.upper(), period))
+
+
 @router.post("/api/stocks/data", response_model=StockDataResponse)
 def get_stock_data(request: StockSymbolRequest):
-    """
-    Get stock data for a given symbol
-    """
-    try:
-        data = StockService.get_stock_data(
-            symbol=request.symbol,
-            period=request.period,
-            interval=request.interval,
-        )
-        return StockDataResponse(**data)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error fetching stock data: {str(e)}")
+    return market_call(lambda: StockService.get_stock_data(request.symbol, request.period, request.interval))
 
 
 @router.get("/api/stocks/data/{symbol}", response_model=StockDataResponse)
-def get_stock_by_symbol(symbol: str):
-    """
-    Get stock data by symbol
-    """
-    try:
-        data = StockService.get_stock_data(symbol=symbol)
-        return StockDataResponse(**data)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error fetching stock data: {str(e)}")
+def get_stock_by_symbol(symbol: Symbol):
+    return market_call(lambda: StockService.get_stock_data(symbol))
+
+
+def analyze(request):
+    if request.analysis_type == "fundamental":
+        result = AIAnalysisService.analyze_fundamental(request.symbol, StockService.get_stock_data(request.symbol))
+    else:
+        result = AIAnalysisService.analyze_technical(request.symbol, StockService.calculate_technical_indicators(request.symbol))
+    if request.include_forecast:
+        result["forecast"] = AIAnalysisService.generate_forecast(request.symbol, StockService.get_stock_data(request.symbol))
+    return result
 
 
 @router.post("/api/stocks/analyze", response_model=AIAnalysisResponse)
 def analyze_stock(request: AIAnalysisRequest):
-    """
-    Get AI analysis for a stock
-    """
-    try:
-        # Get technical indicators
-        indicators = StockService.calculate_technical_indicators(request.symbol)
+    return market_call(lambda: analyze(request))
 
-        # Perform analysis based on type
-        if request.analysis_type == "technical":
-            result = AIAnalysisService.analyze_technical(request.symbol, indicators)
-        elif request.analysis_type == "fundamental":
-            stock_data = StockService.get_stock_data(request.symbol)
-            result = AIAnalysisService.analyze_fundamental(request.symbol, stock_data)
-        else:
-            result = AIAnalysisService.analyze_technical(request.symbol, indicators)
 
-        # Generate forecast if requested
-        if request.include_forecast:
-            stock_data = StockService.get_stock_data(request.symbol)
-            forecast = AIAnalysisService.generate_forecast(request.symbol, stock_data)
-            result["forecast"] = forecast
-
-        return AIAnalysisResponse(**result)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error analyzing stock: {str(e)}")
+@router.get("/api/stocks/dashboard/{symbol}")
+def dashboard(symbol: Symbol):
+    def load():
+        quote = StockService.get_stock_quote(symbol, "1y")
+        indicators = StockService.calculate_technical_indicators(symbol)
+        result = AIAnalysisService.analyze_technical(symbol, indicators)
+        result["forecast"] = AIAnalysisService.generate_forecast(symbol, StockService.get_stock_data(symbol))
+        return {"quote": quote, "indicators": indicators, "analysis": result}
+    return market_call(load)
 
 
 @router.get("/api/stocks/compare/{symbols}")
 def compare_stocks(symbols: str):
-    """
-    Compare multiple stocks
-    """
-    try:
-        symbol_list = [s.strip().upper() for s in symbols.split(",")]
-        stocks = StockService.get_multiple_stocks(symbol_list)
-        return {"stocks": stocks, "timestamp": datetime.utcnow()}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error comparing stocks: {str(e)}")
-
-
-@router.get("/api/stocks/info/{symbols}")
-def get_stocks_info(symbols: str):
-    """
-    Get info for multiple stocks (sector, industry, name)
-    """
-    try:
-        symbol_list = [s.strip().upper() for s in symbols.split(",")]
-        info_list = [StockService.get_stock_info(s) for s in symbol_list]
-        return {"info": info_list, "timestamp": datetime.utcnow()}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error fetching stock info: {str(e)}")
-
-
-@router.get("/api/stocks/news/{symbols}")
-def get_stocks_news(symbols: str):
-    """
-    Get live news for multiple stocks from the watchlist
-    """
-    try:
-        symbol_list = [s.strip().upper() for s in symbols.split(",")]
-
-        # Use a map to deduplicate news by ID
-        news_map = {}
-        for sym in symbol_list:
-            if not sym:
-                continue
-            ticker_news = StockService.get_stock_news(sym)
-            for item in ticker_news:
-                if item["id"] not in news_map:
-                    news_map[item["id"]] = item
-
-        all_news = list(news_map.values())
-
-        # Sort by publish time descending
-        all_news.sort(key=lambda x: x.get("provider_publish_time") or 0, reverse=True)
-
-        return {
-            "news": all_news[:20],
-            "default_watchlist": ["AAPL", "NVDA", "TSLA", "MSFT", "GOOGL"],
-            "timestamp": datetime.utcnow(),
-        }
-    except Exception as e:
-        logger.error(f"News fetch error: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=400, detail=f"Error fetching stock news: {str(e)}")
-
-
-@router.get("/api/analytics/{symbol}")
-def get_stock_analytics(symbol: str):
-    """
-    Get deep AI-driven analytics for a specific stock
-    """
-    try:
-        data = StockService.get_ai_analytics(symbol)
-        return data
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error fetching analytics: {str(e)}")
-
-
-@router.get("/portfolio/analytics")
-def get_portfolio_analytics(symbols: str = ""):
-    """
-    Get aggregate AI portfolio analytics for the provided symbols.
-    """
-    try:
-        symbol_list = [s.strip().upper() for s in symbols.split(",") if s.strip()]
-        data = StockService.get_portfolio_analytics(symbol_list)
-        return data
-    except Exception as e:
-        logger.error(f"Portfolio analytics route error: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"Error fetching portfolio analytics: {str(e)}")
-
-
-@router.get("/api/stocks/trending")
-def get_trending_stocks():
-    """
-    Get stocks currently trending in the news or high-activity tickers
-    """
-    try:
-        from concurrent.futures import ThreadPoolExecutor, as_completed
-        import threading
-        
-        trending_symbols = ["NVDA", "AAPL", "TSLA", "MSFT", "AMZN", "META", "GOOGL", "AMD"]
-        stocks = []
-        
-        # Use ThreadPoolExecutor with timeout for parallel fetching
-        with ThreadPoolExecutor(max_workers=8) as executor:
-            future_to_symbol = {
-                executor.submit(StockService.get_stock_quote, symbol): symbol 
-                for symbol in trending_symbols
-            }
-            
-            for future in as_completed(future_to_symbol, timeout=10):
-                try:
-                    stock_data = future.result(timeout=5)
-                    stocks.append(stock_data)
-                except Exception as e:
-                    symbol = future_to_symbol[future]
-                    logger.warning(f"Failed to fetch {symbol}: {str(e)}")
-                    # Add fallback data for this symbol
-                    base_prices = {"NVDA": 900, "AAPL": 190, "TSLA": 170, "MSFT": 410, "AMZN": 180, "META": 475, "GOOGL": 152, "AMD": 165}
-                    base = base_prices.get(symbol, 100)
-                    stocks.append({
-                        "symbol": symbol,
-                        "name": f"{symbol} Inc.",
-                        "current_price": base,
-                        "change": 0,
-                        "change_percent": 0,
-                        "timestamp": datetime.utcnow().isoformat()
-                    })
-        
-        return {"stocks": stocks, "timestamp": datetime.utcnow().isoformat()}
-    except Exception as e:
-        logger.error(f"Trending stocks route error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error fetching trending stocks: {str(e)}")
-
+    items = list(dict.fromkeys(s.strip().upper() for s in symbols.split(",")))
+    if len(items) > settings.MAX_STOCKS_PER_REQUEST or any(not re.fullmatch(r"[A-Z0-9.^=-]{1,20}", s) for s in items):
+        raise HTTPException(status_code=422, detail="Provide valid tickers within the configured stock limit.")
+    return market_call(lambda: {"stocks": StockService.get_multiple_stocks(items), "timestamp": datetime.now(timezone.utc)})

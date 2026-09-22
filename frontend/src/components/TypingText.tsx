@@ -1,37 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 
-interface TypingTextProps {
-  text: string;
-  speed?: number;
-  className?: string;
-}
-
-export function TypingText({ text, speed = 50, className }: TypingTextProps) {
-  const [displayedText, setDisplayedText] = useState("");
-
+export function TypingText({ text, speed = 18 }: { text: string; speed?: number }) {
+  const [length, setLength] = useState(0);
+  const reducedMotion = useReducedMotion();
   useEffect(() => {
-    let i = 0;
-    const timer = setInterval(() => {
-      setDisplayedText(text.slice(0, i));
-      i++;
-      if (i > text.length) {
-        clearInterval(timer);
-      }
-    }, speed);
-
-    return () => clearInterval(timer);
-  }, [text, speed]);
-
+    setLength(0);
+    if (reducedMotion) return;
+    const timer = window.setInterval(
+      () => {
+        setLength((current) => {
+          if (current >= text.length) window.clearInterval(timer);
+          return Math.min(current + 1, text.length);
+        });
+      },
+      Math.max(speed, 1),
+    );
+    return () => window.clearInterval(timer);
+  }, [text, speed, reducedMotion]);
   return (
-    <span className={className}>
-      {displayedText}
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 1, 0] }}
-        transition={{ repeat: Infinity, duration: 0.8 }}
-        className="ml-0.5 inline-block h-4 w-0.5 translate-y-0.5 bg-electric"
-      />
-    </span>
+    <>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true">{reducedMotion ? text : text.slice(0, length)}</span>
+    </>
   );
 }

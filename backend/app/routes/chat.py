@@ -1,31 +1,111 @@
+"""Keep provider credentials and instructions on the server."""
+from collections import OrderedDict, deque
+from datetime import datetime, timezone
+from threading import Lock
+import time
 
-from fastapi import APIRouter, HTTPException, Body
-from app.services.chat_service import ChatService
-from pydantic import BaseModel
-from typing import List, Dict, Optional
+import requests
+from fastapi import APIRouter, HTTPException, Request
 
-router = APIRouter(tags=["Chat"])
+from app.config import settings
+from app.models.schemas import ChatRequest
 
-class ChatRequest(BaseModel):
-    message: Optional[str] = None
-    messages: Optional[List[Dict[str, str]]] = None
+router = APIRouter(prefix="/api/chat", tags=["Chat"])
+_requests = OrderedDict()
+_lock = Lock()
+SYSTEM_PROMPT = (
+    "You are Trader AI, an educational stock market assistant. Explain indicators, "
+    "diversification and market concepts clearly. You have no live quote or news tools "
+    "in this conversation: never invent current prices, news, sources or model accuracy. "
+    "Distinguish general analysis from personalized advice and state uncertainty."
+)
 
-@router.post("/chat")
-async def chat_endpoint(request: ChatRequest = Body(...)):
-    """
-    Unified chat endpoint for Jarvis AI Assistant.
-    Supports single message or full history.
-    """
+
+def local_reference_response(question):
+    """Provide a useful, clearly limited answer when the hosted model is unavailable."""
+    question = question.lower()
+    prefix = "The hosted AI response is unavailable, so this is a limited local reference answer. "
+    if "rsi" in question:
+        return prefix + (
+            "RSI, or Relative Strength Index, measures recent price momentum on a scale from 0 to 100. "
+            "Values above 70 are commonly treated as overbought and values below 30 as oversold, but neither is a trade signal by itself."
+        )
+    if "macd" in question:
+        return prefix + (
+            "MACD compares two exponential moving averages to show momentum. A positive histogram means the MACD line is above its signal line; "
+            "a negative histogram means the reverse. It is most useful alongside trend and risk context."
+        )
+    if "moving average" in question or "ma20" in question or "ma50" in question or "ma 20" in question:
+        return prefix + (
+            "A moving average smooths price history over a selected number of sessions. Shorter averages react faster; longer averages show the broader trend. "
+            "Price above rising averages can support an uptrend reading, but it does not guarantee a future move."
+        )
+    if "portfolio" in question or "diversif" in question:
+        return prefix + (
+            "Diversification spreads exposure across assets, sectors and regions so a single holding has less influence on the portfolio. "
+            "It reduces concentration risk but cannot eliminate market-wide losses."
+        )
+    return prefix + (
+        "Try a question about RSI, MACD, moving averages, portfolio diversification, or the signals shown for the selected ticker. "
+        "The market dashboard remains available for current historical-price analysis."
+    )
+
+
+def fallback(question):
+    return {
+        "response": local_reference_response(question),
+        "fallback": True,
+        "timestamp": datetime.now(timezone.utc),
+    }
+
+
+def check_rate_limit(client):
+    now = time.monotonic()
+    with _lock:
+        if client not in _requests and len(_requests) >= 4096:
+            _requests.popitem(last=False)
+        recent = _requests.setdefault(client, deque())
+        while recent and recent[0] <= now - 60:
+            recent.popleft()
+        if len(recent) >= settings.CHAT_REQUESTS_PER_MINUTE:
+            raise HTTPException(429, "Too many messages. Please wait a minute and retry.")
+        recent.append(now)
+        _requests.move_to_end(client)
+
+
+@router.post("")
+def chat(payload: ChatRequest, request: Request):
+    if payload.messages[-1].role != "user" or not payload.messages[-1].content.strip():
+        raise HTTPException(422, "The last message must contain a user question.")
+    check_rate_limit(request.client.host if request.client else "unknown")
+    question = payload.messages[-1].content
+    if not settings.OPENROUTER_API_KEY:
+        return fallback(question)
     try:
-        # Handle both single message and full history for flexibility
-        messages = request.messages if request.messages else []
-        if request.message and not messages:
-            messages = [{"role": "user", "content": request.message}]
-        
-        if not messages:
-            raise HTTPException(status_code=400, detail="No message provided")
-            
-        reply = await ChatService.get_ai_response(messages)
-        return {"reply": reply}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        response = requests.post(
+            f"{settings.OPENROUTER_API_URL.rstrip('/')}/chat/completions",
+            headers={"Authorization": f"Bearer {settings.OPENROUTER_API_KEY}", "Content-Type": "application/json"},
+            json={
+                "model": settings.OPENROUTER_MODEL,
+                "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + [message.model_dump() for message in payload.messages],
+                "temperature": 0.25, "max_tokens": 800,
+            },
+            timeout=(10, 45),
+        )
+    except requests.Timeout as exc:
+        return fallback(question)
+    except requests.RequestException as exc:
+        return fallback(question)
+    if response.status_code == 429:
+        raise HTTPException(429, "The AI provider is busy. Please retry shortly.")
+    if response.status_code in (401, 402, 403):
+        return fallback(question)
+    if not response.ok:
+        return fallback(question)
+    try:
+        content = response.json()["choices"][0]["message"]["content"]
+        if not isinstance(content, str) or not content.strip():
+            raise ValueError("Empty response")
+    except (ValueError, KeyError, IndexError, TypeError) as exc:
+        return fallback(question)
+    return {"response": content.strip(), "timestamp": datetime.now(timezone.utc)}

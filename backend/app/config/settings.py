@@ -3,6 +3,7 @@ Configuration settings for the AI Stock Backend
 """
 from pydantic_settings import BaseSettings
 from typing import List
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -11,7 +12,7 @@ class Settings(BaseSettings):
     # API Configuration
     APP_NAME: str = "AI Stock Backend"
     APP_VERSION: str = "1.0.0"
-    DEBUG: bool = True
+    DEBUG: bool = False
 
     # Server Configuration
     API_HOST: str = "0.0.0.0"
@@ -19,27 +20,24 @@ class Settings(BaseSettings):
     RELOAD: bool = True
 
     # CORS Configuration
-    CORS_ORIGINS: List[str] = [
-        "http://localhost:8080", 
-        "http://localhost:8081", 
-        "http://localhost:3000", 
-        "http://127.0.0.1:8080",
-        "http://127.0.0.1:8081",
-        "https://stellar-signal-ai.vercel.app",
-        "https://stellar-signal-ai.web.app",
-        "https://stellar-signal-ai.firebaseapp.com"
-    ]
+    CORS_ORIGINS: List[str] = ["http://localhost:8080", "http://localhost:3000", "http://127.0.0.1:8080"]
     CORS_ALLOW_CREDENTIALS: bool = True
     CORS_ALLOW_METHODS: List[str] = ["*"]
     CORS_ALLOW_HEADERS: List[str] = ["*"]
 
+    # Database Configuration
+    MONGODB_URL: str = "mongodb://localhost:27017"
+    MONGODB_DATABASE: str = "trader_ai"
+    MONGODB_TIMEOUT: int = 5000
 
     # OpenRouter API Configuration (for AI responses)
     OPENROUTER_API_KEY: str = ""
     OPENROUTER_API_URL: str = "https://openrouter.ai/api/v1"
+    OPENROUTER_MODEL: str = "deepseek/deepseek-chat"
+    CHAT_REQUESTS_PER_MINUTE: int = 10
 
     # Stock Data Configuration
-    STOCK_DATA_CACHE_EXPIRY: int = 3600  # 1 hour in seconds
+    STOCK_DATA_CACHE_EXPIRY: int = 60
     MAX_STOCKS_PER_REQUEST: int = 50
     DEFAULT_STOCK_INTERVAL: str = "1d"  # daily data
 
@@ -53,9 +51,11 @@ class Settings(BaseSettings):
     LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
     class Config:
-        env_file = ".env"
+        env_file = (str(Path(__file__).resolve().parents[2] / ".env"),
+                    str(Path(__file__).resolve().parents[2] / ".env.local"))
         env_file_encoding = "utf-8"
         case_sensitive = True
+        extra = "ignore"
 
 
 # Instantiate settings

@@ -3,17 +3,20 @@ import { Quote } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "TRADER AI's prediction confidence scores have become the cornerstone of our pre-market briefings. The accuracy is uncanny.",
+    quote:
+      "TRADER AI's prediction confidence scores have become the cornerstone of our pre-market briefings. The accuracy is uncanny.",
     name: "Morgan Vasquez",
     role: "PM, Helix Capital",
   },
   {
-    quote: "I replaced four separate tools with TRADER AI. The sentiment engine alone is worth more than my Bloomberg terminal.",
+    quote:
+      "I replaced four separate tools with TRADER AI. The sentiment engine alone is worth more than my Bloomberg terminal.",
     name: "Daniel Cho",
     role: "Quantitative Analyst",
   },
   {
-    quote: "The AI explanations turn every recommendation into a teachable moment. My team's intuition has sharpened dramatically.",
+    quote:
+      "The AI explanations turn every recommendation into a teachable moment. My team's intuition has sharpened dramatically.",
     name: "Aisha Rahman",
     role: "Head of Research, Northstar",
   },
@@ -30,7 +33,9 @@ export function Testimonials() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <div className="mb-3 text-xs uppercase tracking-widest text-electric">Trusted by professionals</div>
+          <div className="mb-3 text-xs uppercase tracking-widest text-electric">
+            Trusted by professionals
+          </div>
           <h2 className="mx-auto max-w-3xl font-display text-4xl font-semibold tracking-tight md:text-5xl">
             From hedge funds to <span className="text-gradient">independent quants.</span>
           </h2>
@@ -50,7 +55,10 @@ export function Testimonials() {
               <Quote className="h-8 w-8 text-electric/40" />
               <p className="mt-4 text-base leading-relaxed text-foreground/90">"{t.quote}"</p>
               <div className="mt-6 flex items-center gap-3 border-t border-glass-border pt-5">
-                <div className="grid h-10 w-10 place-items-center rounded-full font-display font-semibold text-primary-foreground" style={{ background: "var(--gradient-electric)" }}>
+                <div
+                  className="grid h-10 w-10 place-items-center rounded-full font-display font-semibold text-primary-foreground"
+                  style={{ background: "var(--gradient-electric)" }}
+                >
                   {t.name[0]}
                 </div>
                 <div>

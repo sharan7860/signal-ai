@@ -1,12 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Activity, Bell, Trash2, CheckCircle2, User as UserIcon } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { Activity } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import AlertCenter from "./alerts/AlertCenter";
+import { MagneticButton } from "./MagneticButton";
 
 const links = [
-  { label: "Recommendations", id: "dashboard" },
+  { label: "Predictions", id: "dashboard" },
   { label: "Analytics", id: "analytics" },
   { label: "Insights", id: "insights" },
   { label: "Portfolio", id: "portfolio" },
@@ -14,37 +13,16 @@ const links = [
 ];
 
 export function Navbar() {
-  const { user, loginWithGoogle, logout } = useAuth();
   const { scrollY } = useScroll();
   const blur = useTransform(scrollY, [0, 100], [10, 28]);
-
-  const bg = useTransform(scrollY, [0, 100], ["rgba(15, 15, 20, 0.25)", "rgba(15, 15, 20, 0.88)"]);
-
+  const bg = useTransform(
+    scrollY,
+    [0, 100],
+    ["oklch(0.18 0.025 254 / 0.25)", "oklch(0.18 0.025 254 / 0.78)"],
+  );
   const [active, setActive] = useState<string>("");
-  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
-    setImgError(false);
-  }, [user?.photoURL]);
-
-  // Notification State
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [showNotifs, setShowNotifs] = useState(false);
-  const unreadCount = notifications.filter(n => !n.read).length;
-
-  useEffect(() => {
-    // Listen for new signals from Insights
-    const handleNewSignal = (e: any) => {
-      const signal = e.detail;
-      setNotifications(prev => [{
-        ...signal,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        read: false
-      }, ...prev].slice(0, 10)); // Keep last 10
-    };
-
-    window.addEventListener("trader_ai_new_signal", handleNewSignal);
-
     const els = links
       .map((l) => document.getElementById(l.id))
       .filter((e): e is HTMLElement => !!e);
@@ -57,39 +35,34 @@ export function Navbar() {
       { rootMargin: "-40% 0px -55% 0px", threshold: 0 },
     );
     els.forEach((el) => obs.observe(el));
-    return () => {
-      obs.disconnect();
-      window.removeEventListener("trader_ai_new_signal", handleNewSignal);
-    };
+    return () => obs.disconnect();
   }, []);
-
-  const markAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-  };
-
-  const clearAll = () => {
-    setNotifications([]);
-    setShowNotifs(false);
-  };
 
   return (
     <motion.header
-      style={{ backdropFilter: useTransform(blur, (b) => `blur(${b}px) saturate(180%)`), background: bg }}
-      className="fixed inset-x-0 top-0 z-50 border-b border-white/5"
+      style={{
+        backdropFilter: useTransform(blur, (b) => `blur(${b}px) saturate(180%)`),
+        background: bg,
+      }}
+      className="fixed inset-x-0 top-0 z-50 border-b border-glass-border"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="relative grid h-8 w-8 place-items-center rounded-lg" style={{ background: "var(--gradient-electric)" }}>
+          <div
+            className="relative grid h-8 w-8 place-items-center rounded-lg"
+            style={{ background: "var(--gradient-electric)" }}
+          >
             <Activity className="h-4 w-4 text-primary-foreground" />
-            <div className="absolute inset-0 rounded-lg opacity-50 blur-md" style={{ background: "var(--gradient-electric)" }} />
+            <div
+              className="absolute inset-0 rounded-lg opacity-50 blur-md"
+              style={{ background: "var(--gradient-electric)" }}
+            />
           </div>
           <span className="font-display text-lg font-semibold tracking-tight">
-            TRADER <span className="text-electric">AI</span>
+            TRADER<span className="text-electric"> AI</span>
           </span>
         </Link>
 
-        {/* Nav links */}
         <nav className="hidden items-center gap-1 md:flex">
           {links.map((l) => {
             const isActive = active === l.id;
@@ -103,58 +76,40 @@ export function Navbar() {
                   <motion.span
                     layoutId="nav-active"
                     transition={{ type: "spring", stiffness: 360, damping: 32 }}
-                    className="absolute inset-0 -z-0 rounded-full bg-white/5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
+                    className="absolute inset-0 -z-0 rounded-full"
+                    style={{
+                      background: "oklch(0.85 0.14 188 / 0.12)",
+                      boxShadow: "inset 0 0 0 1px oklch(0.85 0.14 188 / 0.3)",
+                    }}
                   />
                 )}
                 <span className={`relative z-10 ${isActive ? "text-foreground" : ""}`}>
                   {l.label}
                 </span>
+                <span
+                  className="pointer-events-none absolute inset-x-4 -bottom-0.5 h-px origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"
+                  style={{ background: "var(--gradient-electric)" }}
+                />
               </a>
             );
           })}
         </nav>
 
-        {/* Right section — alert bell always visible alongside profile */}
         <div className="flex items-center gap-3">
-          <AlertCenter />
-
-          <div className="flex items-center gap-3 border-l border-white/10 pl-3">
-            {!user ? (
-              <button
-                onClick={loginWithGoogle}
-                className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:block"
-              >
-                Sign in
-              </button>
-            ) : (
-              <div className="flex items-center gap-2.5">
-                {user.photoURL && !imgError ? (
-                  <img
-                    src={user.photoURL}
-                    alt={user.displayName || "User"}
-                    onError={() => setImgError(true)}
-                    className="h-7 w-7 rounded-full border border-electric/30 object-cover"
-                  />
-                ) : (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full border border-electric/30 bg-slate-900/80 text-electric shadow-[0_0_10px_rgba(0,242,255,0.15)]">
-                    {user.displayName ? (
-                      <span className="text-xs font-bold uppercase tracking-wider">
-                        {user.displayName.charAt(0)}
-                      </span>
-                    ) : (
-                      <UserIcon className="h-4 w-4" />
-                    )}
-                  </div>
-                )}
-                <button
-                  onClick={logout}
-                  className="hidden text-[10px] uppercase tracking-widest text-muted-foreground transition-colors hover:text-electric md:block"
-                >
-                  Sign out
-                </button>
-              </div>
-            )}
-          </div>
+          <button
+            onClick={() => window.dispatchEvent(new Event("open-trader-chat"))}
+            className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:block"
+          >
+            Ask AI
+          </button>
+          <MagneticButton
+            onClick={() =>
+              document.getElementById("dashboard")?.scrollIntoView({ behavior: "smooth" })
+            }
+            className="!px-5 !py-2.5 text-xs"
+          >
+            Analyze stocks
+          </MagneticButton>
         </div>
       </div>
     </motion.header>

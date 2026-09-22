@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface JarvisAssistantProps {
   isOpen: boolean;
@@ -8,16 +8,6 @@ interface JarvisAssistantProps {
 
 export function JarvisAssistant({ isOpen, onToggle }: JarvisAssistantProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
 
   return (
     <motion.button
@@ -37,7 +27,11 @@ export function JarvisAssistant({ isOpen, onToggle }: JarvisAssistantProps) {
                 "0 0 60px rgba(56,189,248,0.8)",
                 "0 0 40px rgba(56,189,248,0.6)",
               ]
-            : ["0 0 30px rgba(56,189,248,0.4)", "0 0 50px rgba(56,189,248,0.6)", "0 0 30px rgba(56,189,248,0.4)"],
+            : [
+                "0 0 30px rgba(56,189,248,0.4)",
+                "0 0 50px rgba(56,189,248,0.6)",
+                "0 0 30px rgba(56,189,248,0.4)",
+              ],
         }}
         transition={{ duration: 3, repeat: Infinity }}
         className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-500/20 via-blue-500/10 to-transparent"
@@ -114,7 +108,14 @@ export function JarvisAssistant({ isOpen, onToggle }: JarvisAssistantProps) {
         </defs>
         <line x1="20" y1="20" x2="80" y2="80" stroke="url(#dataLineGradient)" strokeWidth="0.5" />
         <line x1="80" y1="20" x2="20" y2="80" stroke="url(#dataLineGradient)" strokeWidth="0.5" />
-        <circle cx="50" cy="50" r="8" fill="none" stroke="rgba(102, 252, 241, 0.6)" strokeWidth="0.5" />
+        <circle
+          cx="50"
+          cy="50"
+          r="8"
+          fill="none"
+          stroke="rgba(102, 252, 241, 0.6)"
+          strokeWidth="0.5"
+        />
       </motion.svg>
 
       {/* Floating motion */}

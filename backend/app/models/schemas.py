@@ -2,27 +2,32 @@
 Pydantic models/schemas for request/response validation
 """
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Literal, Annotated
 from datetime import datetime
+
+Symbol = Annotated[str, Field(min_length=1, max_length=20, pattern=r"^[A-Za-z0-9.^=-]+$")]
+Period = Literal["5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "max"]
 
 
 class StockSymbolRequest(BaseModel):
     """Request model for stock symbol analysis"""
-    symbol: str = Field(..., description="Stock ticker symbol (e.g., AAPL)")
-    period: Optional[str] = Field("1y", description="Data period (1d, 5d, 1mo, 3mo, 6mo, 1y, 5y, 10y, max)")
-    interval: Optional[str] = Field("1d", description="Data interval (1m, 5m, 15m, 30m, 60m, 1d, 1wk, 1mo)")
+    symbol: Symbol
+    period: Period = "1y"
+    interval: Literal["1d", "1wk", "1mo"] = "1d"
 
 
 class StockDataResponse(BaseModel):
     """Response model for stock data"""
     symbol: str
     name: Optional[str] = None
+    currency: Optional[str] = None
     current_price: float
     change: float
     change_percent: float
     pe_ratio: Optional[float] = None
-    market_cap: Optional[Any] = None
+    market_cap: Optional[float] = None
     dividend_yield: Optional[float] = None
+    history: List[Dict[str, Any]] = Field(default_factory=list)
     timestamp: datetime
 
 
@@ -34,17 +39,21 @@ class StockQuoteResponse(BaseModel):
     high_price: float
     low_price: float
     volume: int
+    company_name: Optional[str] = None
+    currency: Optional[str] = None
+    sector: Optional[str] = None
+    market_cap: Optional[float] = None
+    percentage_change: Optional[float] = None
+    previous_close: Optional[float] = None
     historical_closes: List[Dict[str, Any]] = Field(description="Historical close prices with dates")
     timestamp: datetime
-    company_name: Optional[str] = None
-    percentage_change: Optional[float] = 0.0
 
 
 class AIAnalysisRequest(BaseModel):
     """Request model for AI stock analysis"""
-    symbol: str = Field(..., description="Stock ticker symbol")
-    analysis_type: Optional[str] = Field("technical", description="Type of analysis (technical, fundamental, sentiment)")
-    include_forecast: Optional[bool] = Field(True, description="Include price forecast")
+    symbol: Symbol
+    analysis_type: Literal["technical", "fundamental"] = "technical"
+    include_forecast: bool = True
 
 
 class AIAnalysisResponse(BaseModel):
@@ -80,6 +89,15 @@ class ChatMessageRequest(BaseModel):
     """Request model for chat messages"""
     message: str = Field(..., description="User message")
     context: Optional[Dict[str, Any]] = Field(None, description="Additional context")
+
+
+class ConversationMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=4000)
+
+
+class ChatRequest(BaseModel):
+    messages: List[ConversationMessage] = Field(min_length=1, max_length=20)
 
 
 class ChatMessageResponse(BaseModel):
