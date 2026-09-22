@@ -33,7 +33,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-function Index() {
+export function HomePage() {
   return (
     <MarketProvider>
       <div className="relative min-h-screen overflow-x-hidden">
@@ -55,4 +55,8 @@ function Index() {
       </div>
     </MarketProvider>
   );
+}
+
+function Index() {
+  return <HomePage />;
 }

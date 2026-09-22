@@ -34,9 +34,9 @@ jobs:
           GITHUB_PAGES: "true"
         run: |
           npm ci
-          npm run build
+          npm run build:pages
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/dist/client
+          path: frontend/dist/pages
       - id: deployment
         uses: actions/deploy-pages@v4

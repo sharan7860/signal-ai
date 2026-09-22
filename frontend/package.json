@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "tsc --noEmit && vite build",
+    "build:pages": "tsc --noEmit && vite build --config vite.pages.config.ts",
     "typecheck": "tsc --noEmit",
     "test:backend": "python -B -m unittest discover -s backend/tests -v",
     "dev:backend": "python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000",
