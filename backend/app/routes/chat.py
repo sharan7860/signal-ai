@@ -2,6 +2,7 @@
 from collections import OrderedDict, deque
 from datetime import datetime, timezone
 import logging
+import re
 from threading import Lock
 import time
 
@@ -10,6 +11,7 @@ from fastapi import APIRouter, HTTPException, Request
 
 from app.config import settings
 from app.models.schemas import ChatRequest
+from app.services import StockService
 
 router = APIRouter(prefix="/api/chat", tags=["Chat"])
 logger = logging.getLogger(__name__)
@@ -17,10 +19,66 @@ _requests = OrderedDict()
 _lock = Lock()
 SYSTEM_PROMPT = (
     "You are Trader AI, an educational stock market assistant. Explain indicators, "
-    "diversification and market concepts clearly. You have no live quote or news tools "
-    "in this conversation: never invent current prices, news, sources or model accuracy. "
-    "Distinguish general analysis from personalized advice and state uncertainty."
+    "diversification and market concepts clearly. When a market-data snapshot is provided "
+    "below, use its values to answer questions about that ticker. It is the latest data "
+    "available from the market-data provider and can be delayed. Never invent prices, news, "
+    "sources, or values that are absent from the snapshot. Distinguish general analysis "
+    "from personalized advice and state uncertainty."
 )
+COMMON_WORDS = {"A", "AN", "AND", "ARE", "FOR", "HOW", "I", "IN", "IS", "IT", "OF", "ON", "OR", "RSI", "THE", "TO", "WHAT", "WITH"}
+
+
+def requested_ticker(question):
+    """Find an explicitly named ticker without treating ordinary words as symbols."""
+    candidates = re.findall(r"\$([A-Za-z]{1,5})\b|\b([A-Z]{1,5})\b", question)
+    for dollar_symbol, uppercase_symbol in candidates:
+        symbol = (dollar_symbol or uppercase_symbol).upper()
+        if symbol not in COMMON_WORDS:
+            return symbol
+    contextual = re.search(
+        r"\b(?:about|analy[sz]e|analysis|chart|for|of|price|quote|stock|ticker)\s+(?:of\s+)?\$?([A-Za-z]{1,5})\b",
+        question,
+        flags=re.IGNORECASE,
+    )
+    if contextual:
+        symbol = contextual.group(1).upper()
+        if symbol not in COMMON_WORDS:
+            return symbol
+    return None
+
+
+def market_snapshot(question):
+    """Load the latest available quote and indicators for a requested ticker."""
+    symbol = requested_ticker(question)
+    if not symbol:
+        return None
+    try:
+        quote = StockService.get_stock_quote(symbol, "1y")
+        indicators = StockService.calculate_technical_indicators(symbol)
+    except Exception as exc:
+        logger.warning("Could not load a market snapshot for %s (%s)", symbol, type(exc).__name__)
+        return None
+    fields = {
+        "ticker": quote["symbol"],
+        "company": quote.get("company_name"),
+        "currency": quote.get("currency"),
+        "latest_price": quote.get("current_price"),
+        "change_percent": quote.get("percentage_change"),
+        "previous_close": quote.get("previous_close"),
+        "day_high": quote.get("high_price"),
+        "day_low": quote.get("low_price"),
+        "volume": quote.get("volume"),
+        "ma_20": indicators.get("ma_20"),
+        "ma_50": indicators.get("ma_50"),
+        "ma_200": indicators.get("ma_200"),
+        "rsi_14": indicators.get("rsi"),
+        "macd": indicators.get("macd"),
+        "macd_signal": indicators.get("macd_signal"),
+        "snapshot_time_utc": quote["timestamp"].isoformat(),
+    }
+    return "MARKET DATA SNAPSHOT (use only these values for current-market claims):\n" + "\n".join(
+        f"{name}: {value}" for name, value in fields.items() if value is not None
+    )
 
 
 def local_reference_response(question):
@@ -84,13 +142,18 @@ def chat(payload: ChatRequest, request: Request):
     if not settings.OPENROUTER_API_KEY:
         logger.warning("OpenRouter is not configured; serving the local chat reference response")
         return fallback(question)
+    snapshot = market_snapshot(question)
+    provider_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    if snapshot:
+        provider_messages.append({"role": "system", "content": snapshot})
+    provider_messages.extend(message.model_dump() for message in payload.messages)
     try:
         response = requests.post(
             f"{settings.OPENROUTER_API_URL.rstrip('/')}/chat/completions",
             headers={"Authorization": f"Bearer {settings.OPENROUTER_API_KEY}", "Content-Type": "application/json"},
             json={
                 "model": settings.OPENROUTER_MODEL,
-                "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + [message.model_dump() for message in payload.messages],
+                "messages": provider_messages,
                 "temperature": 0.25, "max_tokens": 800,
             },
             timeout=(10, 45),

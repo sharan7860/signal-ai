@@ -12,7 +12,7 @@ import requests
 
 from app.main import app
 from app.config import settings
-from app.routes.chat import _requests
+from app.routes.chat import _requests, requested_ticker
 from app.services.stock_service import _market_data
 
 
@@ -129,6 +129,23 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("test-secret", response.text)
         self.assertEqual(send.call_args.kwargs["headers"]["Authorization"], "Bearer test-secret")
         self.assertEqual(send.call_args.kwargs["json"]["messages"][-1]["content"], "Explain RSI")
+
+    async def test_chat_supplies_requested_ticker_snapshot_to_provider(self):
+        upstream = Mock(status_code=200, ok=True)
+        upstream.json.return_value = {"choices": [{"message": {"content": "AAPL data summary."}}]}
+        snapshot = "MARKET DATA SNAPSHOT (use only these values for current-market claims):\\nticker: AAPL"
+        with patch.object(settings, "OPENROUTER_API_KEY", "test-secret"), patch(
+            "app.routes.chat.market_snapshot", return_value=snapshot
+        ), patch("app.routes.chat.requests.post", return_value=upstream) as send:
+            response = await self.client.post(
+                "/api/chat", json={"messages": [{"role": "user", "content": "What about AAPL?"}]}
+            )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(snapshot, [item["content"] for item in send.call_args.kwargs["json"]["messages"]])
+
+    def test_requested_ticker_accepts_symbols_without_matching_common_words(self):
+        self.assertEqual(requested_ticker("What about aapl?"), "AAPL")
+        self.assertEqual(requested_ticker("Explain RSI"), None)
 
     async def test_chat_timeout_and_missing_configuration_use_local_reference(self):
         body = {"messages": [{"role": "user", "content": "Explain RSI"}]}

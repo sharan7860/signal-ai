@@ -10,7 +10,7 @@ const STORAGE_KEY = "trader-ai-assistant-messages";
 const welcome = (): ChatMessageType => ({
   role: "assistant",
   content:
-    "Welcome to Trader AI. Ask about stock analysis, diversification, or technical indicators. For current prices, use the market dashboard.",
+    "Welcome to Trader AI. Ask about current market data for a ticker such as AAPL, stock analysis, diversification, or technical indicators.",
   timestamp: new Date().toISOString(),
 });
 
