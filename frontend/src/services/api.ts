@@ -1,4 +1,7 @@
-const API_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
+const defaultApiUrl = import.meta.env.DEV
+  ? "/api"
+  : "https://signal-ai-xci0.onrender.com/api";
+const API_URL = (import.meta.env.VITE_API_URL || defaultApiUrl).replace(/\/$/, "");
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;

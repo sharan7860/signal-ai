@@ -32,6 +32,7 @@ jobs:
         working-directory: frontend
         env:
           GITHUB_PAGES: "true"
+          VITE_API_URL: "https://signal-ai-xci0.onrender.com/api"
         run: |
           npm ci
           npm run build:pages

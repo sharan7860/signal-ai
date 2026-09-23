@@ -14,7 +14,7 @@ services:
       - key: MONGODB_URL
         sync: false
       - key: CORS_ORIGINS
-        value: '["https://stellar-signal-ai.vercel.app", "https://signal-ai.vercel.app"]'
+        value: '["https://sharan7860.github.io", "https://stellar-signal-ai.vercel.app", "https://signal-ai.vercel.app"]'
       - key: API_HOST
         value: "0.0.0.0"
       - key: API_PORT
