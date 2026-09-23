@@ -40,6 +40,7 @@ class Settings(BaseSettings):
 
     # Stock Data Configuration
     STOCK_DATA_CACHE_EXPIRY: int = 60
+    NEWS_CACHE_EXPIRY: int = 1200
     MAX_STOCKS_PER_REQUEST: int = 50
     DEFAULT_STOCK_INTERVAL: str = "1d"  # daily data
 

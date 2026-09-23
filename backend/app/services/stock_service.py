@@ -38,6 +38,30 @@ def _market_data(symbol, period, interval, cache_window):
     return history, info
 
 
+@lru_cache(maxsize=128)
+def _stock_news(symbol, cache_window):
+    """Read provider headlines once per configured cache interval."""
+    articles = yf.Ticker(symbol).news or []
+    formatted = []
+    for item in articles:
+        content = item.get("content") or {}
+        provider = content.get("provider") or item.get("provider") or {}
+        canonical = content.get("canonicalUrl") or content.get("clickThroughUrl") or {}
+        title = content.get("title") or item.get("title")
+        if not title:
+            continue
+        formatted.append({
+            "id": content.get("id") or item.get("uuid") or f"{symbol}-{len(formatted)}",
+            "title": title,
+            "publisher": provider.get("displayName") or item.get("publisher") or "Market news",
+            "link": canonical.get("url") or item.get("link"),
+            "published_at": content.get("pubDate") or item.get("providerPublishTime"),
+            "summary": content.get("summary") or item.get("summary") or "",
+            "symbol": symbol,
+        })
+    return tuple(formatted)
+
+
 class StockService:
     @staticmethod
     def _load(symbol, period="1y", interval="1d"):
@@ -97,6 +121,12 @@ class StockService:
     @staticmethod
     def get_multiple_stocks(symbols):
         return [StockService.get_stock_data(symbol) for symbol in symbols]
+
+    @staticmethod
+    def get_stock_news(symbol, limit=6):
+        symbol = symbol.upper()
+        window = int(time.monotonic() // max(settings.NEWS_CACHE_EXPIRY, 1))
+        return list(_stock_news(symbol, window)[:limit])
 
     @staticmethod
     def calculate_technical_indicators(symbol):

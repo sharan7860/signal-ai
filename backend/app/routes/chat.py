@@ -69,6 +69,7 @@ def market_snapshot(question):
     try:
         quote = StockService.get_stock_quote(symbol, "1y")
         indicators = StockService.calculate_technical_indicators(symbol)
+        headlines = StockService.get_stock_news(symbol, limit=3)
     except Exception as exc:
         logger.warning("Could not load a market snapshot for %s (%s)", symbol, type(exc).__name__)
         return None
@@ -90,9 +91,14 @@ def market_snapshot(question):
         "macd_signal": indicators.get("macd_signal"),
         "snapshot_time_utc": quote["timestamp"].isoformat(),
     }
-    return "MARKET DATA SNAPSHOT (use only these values for current-market claims):\n" + "\n".join(
+    snapshot = "MARKET DATA SNAPSHOT (use only these values for current-market claims):\n" + "\n".join(
         f"{name}: {value}" for name, value in fields.items() if value is not None
     )
+    if headlines:
+        snapshot += "\nLATEST PROVIDER HEADLINES (cite the publisher and do not add facts beyond these titles):\n" + "\n".join(
+            f"- {article['publisher']}: {article['title']}" for article in headlines
+        )
+    return snapshot
 
 
 def local_reference_response(question):

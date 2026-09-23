@@ -18,6 +18,15 @@ export interface StockSummary {
   change_percent: number;
   history: PricePoint[];
 }
+export interface NewsArticle {
+  id: string;
+  title: string;
+  publisher: string;
+  link: string | null;
+  published_at: string | number | null;
+  summary: string;
+  symbol: string;
+}
 export interface DashboardData {
   quote: {
     symbol: string;
@@ -54,6 +63,13 @@ export function getDashboard(symbol: string, signal?: AbortSignal) {
 
 export function getWatchlist(signal?: AbortSignal) {
   return apiRequest<{ stocks: StockSummary[] }>("/stocks/compare/AAPL,MSFT,NVDA,SPY", { signal });
+}
+
+export function getStockNews(symbol: string, signal?: AbortSignal) {
+  return apiRequest<{ symbol: string; items: NewsArticle[]; timestamp: string; refresh_after_seconds: number }>(
+    `/stocks/news/${encodeURIComponent(symbol)}`,
+    { signal },
+  );
 }
 
 export function formatPrice(value: number, currency?: string | null) {

@@ -41,6 +41,17 @@ def get_stock_by_symbol(symbol: Symbol):
     return market_call(lambda: StockService.get_stock_data(symbol))
 
 
+@router.get("/api/stocks/news/{symbol}")
+def get_stock_news(symbol: Symbol):
+    """Return recent provider headlines, cached server-side for 20 minutes by default."""
+    return market_call(lambda: {
+        "symbol": symbol.upper(),
+        "items": StockService.get_stock_news(symbol),
+        "timestamp": datetime.now(timezone.utc),
+        "refresh_after_seconds": settings.NEWS_CACHE_EXPIRY,
+    })
+
+
 def analyze(request):
     if request.analysis_type == "fundamental":
         result = AIAnalysisService.analyze_fundamental(request.symbol, StockService.get_stock_data(request.symbol))

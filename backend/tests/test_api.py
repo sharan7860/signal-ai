@@ -13,7 +13,7 @@ import requests
 from app.main import app
 from app.config import settings
 from app.routes.chat import _requests, requested_ticker
-from app.services.stock_service import _market_data
+from app.services.stock_service import _market_data, _stock_news
 
 
 class FakeTicker:
@@ -29,10 +29,23 @@ class FakeTicker:
             "Low": [v - 1 for v in closes], "Close": closes, "Volume": [1000] * 210,
         }, index=pd.bdate_range("2025-01-01", periods=210))
 
+    @property
+    def news(self):
+        return [{
+            "content": {
+                "id": "fixture-news",
+                "title": "Fixture headline",
+                "pubDate": "2025-01-02T03:04:05Z",
+                "provider": {"displayName": "Fixture News"},
+                "canonicalUrl": {"url": "https://example.com/news"},
+            }
+        }]
+
 
 class ApiTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         _market_data.cache_clear()
+        _stock_news.cache_clear()
         _requests.clear()
         self.provider = patch("app.services.stock_service.yf.Ticker", return_value=FakeTicker())
         self.provider.start()
@@ -65,6 +78,14 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(response.status_code, 200, response.text)
             self.assertIsInstance(response.json()["market_cap"], (int, float))
             self.assertIsInstance(response.json()["history"][0]["date"], str)
+
+    async def test_stock_news_returns_provider_headlines(self):
+        response = await self.client.get("/api/stocks/news/AAPL")
+        self.assertEqual(response.status_code, 200, response.text)
+        item = response.json()["items"][0]
+        self.assertEqual(item["title"], "Fixture headline")
+        self.assertEqual(item["publisher"], "Fixture News")
+        self.assertEqual(item["symbol"], "AAPL")
 
     async def test_compare_json_serialization(self):
         response = await self.client.get("/api/stocks/compare/AAPL,MSFT")
