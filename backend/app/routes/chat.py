@@ -1,6 +1,7 @@
 """Keep provider credentials and instructions on the server."""
 from collections import OrderedDict, deque
 from datetime import datetime, timezone
+import logging
 from threading import Lock
 import time
 
@@ -11,6 +12,7 @@ from app.config import settings
 from app.models.schemas import ChatRequest
 
 router = APIRouter(prefix="/api/chat", tags=["Chat"])
+logger = logging.getLogger(__name__)
 _requests = OrderedDict()
 _lock = Lock()
 SYSTEM_PROMPT = (
@@ -80,6 +82,7 @@ def chat(payload: ChatRequest, request: Request):
     check_rate_limit(request.client.host if request.client else "unknown")
     question = payload.messages[-1].content
     if not settings.OPENROUTER_API_KEY:
+        logger.warning("OpenRouter is not configured; serving the local chat reference response")
         return fallback(question)
     try:
         response = requests.post(
@@ -92,20 +95,25 @@ def chat(payload: ChatRequest, request: Request):
             },
             timeout=(10, 45),
         )
-    except requests.Timeout as exc:
+    except requests.Timeout:
+        logger.warning("OpenRouter request timed out; serving the local chat reference response")
         return fallback(question)
     except requests.RequestException as exc:
+        logger.warning("OpenRouter request failed (%s); serving the local chat reference response", type(exc).__name__)
         return fallback(question)
     if response.status_code == 429:
         raise HTTPException(429, "The AI provider is busy. Please retry shortly.")
     if response.status_code in (401, 402, 403):
+        logger.warning("OpenRouter returned HTTP %s; serving the local chat reference response", response.status_code)
         return fallback(question)
     if not response.ok:
+        logger.warning("OpenRouter returned HTTP %s; serving the local chat reference response", response.status_code)
         return fallback(question)
     try:
         content = response.json()["choices"][0]["message"]["content"]
         if not isinstance(content, str) or not content.strip():
             raise ValueError("Empty response")
     except (ValueError, KeyError, IndexError, TypeError) as exc:
+        logger.warning("OpenRouter returned an unusable response (%s); serving the local chat reference response", type(exc).__name__)
         return fallback(question)
     return {"response": content.strip(), "timestamp": datetime.now(timezone.utc)}

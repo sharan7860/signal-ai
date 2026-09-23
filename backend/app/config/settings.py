@@ -33,7 +33,9 @@ class Settings(BaseSettings):
     # OpenRouter API Configuration (for AI responses)
     OPENROUTER_API_KEY: str = ""
     OPENROUTER_API_URL: str = "https://openrouter.ai/api/v1"
-    OPENROUTER_MODEL: str = "deepseek/deepseek-chat"
+    # `openrouter/free` selects an available no-cost model and avoids requiring
+    # paid provider credits for the default deployment.
+    OPENROUTER_MODEL: str = "openrouter/free"
     CHAT_REQUESTS_PER_MINUTE: int = 10
 
     # Stock Data Configuration
