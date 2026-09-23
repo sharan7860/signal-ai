@@ -144,6 +144,8 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn(snapshot, [item["content"] for item in send.call_args.kwargs["json"]["messages"]])
 
     def test_requested_ticker_accepts_symbols_without_matching_common_words(self):
+        self.assertEqual(requested_ticker("aapl"), "AAPL")
+        self.assertEqual(requested_ticker("aapl chart"), "AAPL")
         self.assertEqual(requested_ticker("What about aapl?"), "AAPL")
         self.assertEqual(requested_ticker("Explain RSI"), None)
 

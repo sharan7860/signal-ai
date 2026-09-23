@@ -30,6 +30,11 @@ COMMON_WORDS = {"A", "AN", "AND", "ARE", "FOR", "HOW", "I", "IN", "IS", "IT", "O
 
 def requested_ticker(question):
     """Find an explicitly named ticker without treating ordinary words as symbols."""
+    standalone = re.fullmatch(r"\s*\$?([A-Za-z]{1,5})\s*[?!.]*\s*", question)
+    if standalone:
+        symbol = standalone.group(1).upper()
+        if symbol not in COMMON_WORDS:
+            return symbol
     candidates = re.findall(r"\$([A-Za-z]{1,5})\b|\b([A-Z]{1,5})\b", question)
     for dollar_symbol, uppercase_symbol in candidates:
         symbol = (dollar_symbol or uppercase_symbol).upper()
@@ -42,6 +47,15 @@ def requested_ticker(question):
     )
     if contextual:
         symbol = contextual.group(1).upper()
+        if symbol not in COMMON_WORDS:
+            return symbol
+    before_metric = re.search(
+        r"\b([A-Za-z]{1,5})\s+(?:analysis|chart|price|quote|rsi|stock|ticker)\b",
+        question,
+        flags=re.IGNORECASE,
+    )
+    if before_metric:
+        symbol = before_metric.group(1).upper()
         if symbol not in COMMON_WORDS:
             return symbol
     return None
