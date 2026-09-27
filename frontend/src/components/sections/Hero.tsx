@@ -16,7 +16,7 @@ export function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
-    <section ref={ref} className="relative min-h-screen overflow-hidden pt-32">
+    <section ref={ref} className="relative min-h-screen overflow-hidden pt-24 sm:pt-32">
       {/* grid */}
       <motion.div
         aria-hidden
@@ -37,14 +37,14 @@ export function Hero() {
 
       <motion.div
         style={{ opacity }}
-        className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 pb-32 pt-12 lg:grid-cols-12"
+        className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 pb-20 pt-10 sm:gap-12 sm:px-6 sm:pb-32 sm:pt-12 lg:grid-cols-12"
       >
         <div className="lg:col-span-7">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="glass mb-8 inline-flex items-center gap-2.5 rounded-full px-4 py-1.5 text-xs font-medium"
+            className="glass mb-8 inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl px-3 py-2 text-[11px] font-medium sm:rounded-full sm:px-4 sm:py-1.5 sm:text-xs"
           >
             <span className="relative flex h-2 w-2">
               <span className="absolute inset-0 animate-ping rounded-full bg-emerald-trend opacity-75" />
@@ -61,7 +61,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="font-display text-6xl font-semibold leading-[1.02] tracking-[-0.03em] md:text-7xl lg:text-[6.5rem]"
+            className="font-display text-5xl font-semibold leading-[1.02] tracking-[-0.03em] sm:text-6xl md:text-7xl lg:text-[6.5rem]"
           >
             <span className="text-gradient">Predict Smarter.</span>
             <br />
@@ -84,7 +84,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl"
+            className="mt-7 max-w-xl text-base leading-relaxed text-muted-foreground sm:mt-8 sm:text-lg md:text-xl"
           >
             Explore market prices, compare technical signals, track your holdings, and ask the AI
             assistant to explain what you see.
@@ -94,7 +94,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-10 flex flex-wrap items-center gap-4"
+            className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4"
           >
             <MagneticButton
               onClick={() =>
@@ -117,7 +117,7 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="mt-14 grid max-w-lg grid-cols-3 gap-6"
+            className="mt-12 grid max-w-lg grid-cols-3 gap-3 sm:mt-14 sm:gap-6"
           >
             <Metric label="Technical indicators">6</Metric>
             <Metric label="Projection weekdays">30</Metric>
@@ -129,7 +129,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, delay: 0.4 }}
-          className="relative flex items-center justify-center lg:col-span-5"
+          className="relative hidden items-center justify-center sm:flex lg:col-span-5"
         >
           <div className="relative">
             <motion.div
@@ -176,10 +176,10 @@ export function Hero() {
 function Metric({ children, label }: { children: ReactNode; label: string }) {
   return (
     <div>
-      <div className="font-display text-2xl font-semibold text-foreground md:text-3xl">
+      <div className="font-display text-xl font-semibold text-foreground sm:text-2xl md:text-3xl">
         {children}
       </div>
-      <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground sm:text-xs sm:tracking-wider">{label}</div>
     </div>
   );
 }

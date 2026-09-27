@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Activity } from "lucide-react";
+import { Activity, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MagneticButton } from "./MagneticButton";
 
@@ -20,6 +20,7 @@ export function Navbar() {
     ["oklch(0.18 0.025 254 / 0.25)", "oklch(0.18 0.025 254 / 0.78)"],
   );
   const [active, setActive] = useState<string>("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const els = links
@@ -45,7 +46,7 @@ export function Navbar() {
       }}
       className="fixed inset-x-0 top-0 z-50 border-b border-glass-border"
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <a href={import.meta.env.BASE_URL} className="flex items-center gap-2.5">
           <div
             className="relative grid h-8 w-8 place-items-center rounded-lg"
@@ -57,7 +58,7 @@ export function Navbar() {
               style={{ background: "var(--gradient-electric)" }}
             />
           </div>
-          <span className="font-display text-lg font-semibold tracking-tight">
+          <span className="font-display text-base font-semibold tracking-tight sm:text-lg">
             Signal<span className="text-electric"> AI</span>
           </span>
         </a>
@@ -94,7 +95,17 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-controls="mobile-navigation"
+            aria-expanded={menuOpen}
+            className="grid h-10 w-10 place-items-center rounded-full border border-glass-border text-foreground md:hidden"
+          >
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
           <button
             onClick={() => window.dispatchEvent(new Event("open-signal-chat"))}
             className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:block"
@@ -105,12 +116,39 @@ export function Navbar() {
             onClick={() =>
               document.getElementById("dashboard")?.scrollIntoView({ behavior: "smooth" })
             }
-            className="!px-5 !py-2.5 text-xs"
+            className="!px-4 !py-2.5 text-xs sm:!px-5"
           >
-            Analyze stocks
+            <span className="sm:hidden">Analyze</span>
+            <span className="hidden sm:inline">Analyze stocks</span>
           </MagneticButton>
         </div>
       </div>
+      {menuOpen && (
+        <nav id="mobile-navigation" aria-label="Mobile navigation" className="border-t border-glass-border bg-background/95 px-4 py-3 backdrop-blur-xl md:hidden">
+          <div className="mx-auto grid max-w-7xl gap-1">
+            {links.map((link) => (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                onClick={() => setMenuOpen(false)}
+                className="rounded-xl px-4 py-3 text-sm text-muted-foreground transition-colors hover:bg-electric/10 hover:text-foreground"
+              >
+                {link.label}
+              </a>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                window.dispatchEvent(new Event("open-signal-chat"));
+              }}
+              className="rounded-xl px-4 py-3 text-left text-sm text-electric hover:bg-electric/10"
+            >
+              Ask AI
+            </button>
+          </div>
+        </nav>
+      )}
     </motion.header>
   );
 }
