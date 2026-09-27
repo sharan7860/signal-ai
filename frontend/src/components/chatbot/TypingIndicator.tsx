@@ -8,7 +8,7 @@ export default function TypingIndicator() {
         <span className="inline-flex h-2.5 w-2.5 animate-[pulse_1.2s_ease-in-out_infinite] rounded-full bg-cyan-300" />
         <span className="inline-flex h-2.5 w-2.5 animate-[pulse_1.2s_0.2s_ease-in-out_infinite] rounded-full bg-cyan-300" />
         <span className="inline-flex h-2.5 w-2.5 animate-[pulse_1.2s_0.4s_ease-in-out_infinite] rounded-full bg-cyan-300" />
-        <span className="text-slate-400">Trader AI is typing...</span>
+        <span className="text-slate-400">Signal AI is typing...</span>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-# AI Stock Market Backend Setup
+# Signal AI — Backend Setup
 
 ## Prerequisites
 

@@ -1,5 +1,5 @@
 """
-Configuration settings for the AI Stock Backend
+Configuration settings for the Signal AI backend
 """
 from pydantic_settings import BaseSettings
 from typing import List
@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     """Application settings"""
 
     # API Configuration
-    APP_NAME: str = "AI Stock Backend"
+    APP_NAME: str = "Signal AI Backend"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
 
@@ -27,7 +27,7 @@ class Settings(BaseSettings):
 
     # Database Configuration
     MONGODB_URL: str = "mongodb://localhost:27017"
-    MONGODB_DATABASE: str = "trader_ai"
+    MONGODB_DATABASE: str = "signal_ai"
     MONGODB_TIMEOUT: int = 5000
 
     # OpenRouter API Configuration (for AI responses)

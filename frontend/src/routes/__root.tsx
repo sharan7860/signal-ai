@@ -73,13 +73,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "TRADER AI" },
+      { title: "Signal AI" },
       {
         name: "description",
         content: "AI-powered stock analytics, forecasting and intelligent recommendations.",
       },
-      { name: "author", content: "TRADER AI" },
-      { property: "og:title", content: "TRADER AI" },
+      { name: "author", content: "Signal AI" },
+      { property: "og:title", content: "Signal AI" },
       { property: "og:description", content: "AI-powered stock analytics and predictions." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

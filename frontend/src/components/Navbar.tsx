@@ -58,7 +58,7 @@ export function Navbar() {
             />
           </div>
           <span className="font-display text-lg font-semibold tracking-tight">
-            TRADER<span className="text-electric"> AI</span>
+            Signal<span className="text-electric"> AI</span>
           </span>
         </a>
 
@@ -96,7 +96,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => window.dispatchEvent(new Event("open-trader-chat"))}
+            onClick={() => window.dispatchEvent(new Event("open-signal-chat"))}
             className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:block"
           >
             Ask AI

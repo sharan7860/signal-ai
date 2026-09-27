@@ -64,7 +64,7 @@ class ChatService:
             "Authorization": f"Bearer {ChatService.API_KEY}",
             "Content-Type": "application/json",
             "HTTP-Referer": "http://localhost:8080", # Required by OpenRouter for some models
-            "X-Title": "Trader AI"
+            "X-Title": "Signal AI"
         }
 
         try:

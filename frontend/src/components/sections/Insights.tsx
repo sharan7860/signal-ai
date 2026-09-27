@@ -48,7 +48,7 @@ export function Insights() {
                 headlines are shown below and are separate from the technical signal.
               </p>
               <button
-                onClick={() => window.dispatchEvent(new Event("open-trader-chat"))}
+                onClick={() => window.dispatchEvent(new Event("open-signal-chat"))}
                 className="mt-6 rounded-full bg-electric/15 px-5 py-3 text-sm text-electric"
               >
                 Ask the assistant about these indicators

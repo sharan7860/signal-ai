@@ -7,7 +7,7 @@ interface Holding {
   symbol: string;
   shares: number;
 }
-const STORAGE_KEY = "trader-ai-portfolio-v1";
+const STORAGE_KEY = "signal-ai-portfolio-v1";
 
 export function Portfolio() {
   const [holdings, setHoldings] = useState<Holding[]>([]);

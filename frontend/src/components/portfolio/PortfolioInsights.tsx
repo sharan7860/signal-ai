@@ -21,7 +21,7 @@ export function PortfolioInsights() {
     
     try {
       // Get watchlist from localStorage for context
-      const saved = localStorage.getItem("trader_watchlist");
+      const saved = localStorage.getItem("signal_watchlist");
       const watchlist = saved ? JSON.parse(saved) : ["AAPL", "NVDA", "TSLA"];
       const result = await fetchPortfolioAnalytics(watchlist);
       setData(result);
@@ -41,7 +41,7 @@ export function PortfolioInsights() {
     loadData();
     
     const handleUpdate = () => loadData(true);
-    window.addEventListener("trader_watchlist_updated", handleUpdate);
+    window.addEventListener("signal_watchlist_updated", handleUpdate);
 
     const interval = setInterval(() => {
       loadData(true);
@@ -49,7 +49,7 @@ export function PortfolioInsights() {
 
     return () => {
       clearInterval(interval);
-      window.removeEventListener("trader_watchlist_updated", handleUpdate);
+      window.removeEventListener("signal_watchlist_updated", handleUpdate);
     };
   }, [loadData]);
 

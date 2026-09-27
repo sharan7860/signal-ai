@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 /**
- * Premium cursor system for TRADER AI:
+ * Premium cursor system for Signal AI:
  *  - Lightweight and elegant
  *  - Soft purple-white glow
  *  - Smooth trailing lag with spring physics

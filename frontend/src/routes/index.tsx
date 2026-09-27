@@ -17,13 +17,13 @@ import { MarketProvider } from "@/components/MarketProvider";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TRADER AI — Predict Smarter. Trade Better." },
+      { title: "Signal AI — Explore the market with clarity." },
       {
         name: "description",
         content:
           "AI-powered stock analytics, forecasting and intelligent recommendations. Built for the next generation of investors.",
       },
-      { property: "og:title", content: "TRADER AI — Predict Smarter. Trade Better." },
+      { property: "og:title", content: "Signal AI — Explore the market with clarity." },
       {
         property: "og:description",
         content: "AI-powered stock analytics, forecasting and intelligent recommendations.",

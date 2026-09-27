@@ -22,13 +22,13 @@ export function About() {
           transition={{ duration: 0.7 }}
         >
           <div className="mb-3 text-xs uppercase tracking-widest text-electric">
-            About TRADER AI
+            About Signal AI
           </div>
           <h2 className="font-display text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
             We turn market chaos into <span className="text-gradient">clear signals.</span>
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            TRADER AI brings market history, technical rules and an AI learning assistant into one
+            Signal AI brings market history, technical rules and an AI learning assistant into one
             workspace. Projections use recent historical returns; they are illustrative baselines,
             not promises of future performance. Portfolio holdings stay in your browser.
           </p>

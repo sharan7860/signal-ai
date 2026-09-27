@@ -25,7 +25,7 @@ export function Footer() {
         </div>
         <div className="flex flex-wrap items-center justify-between gap-8">
           <div className="flex items-center gap-2 font-display text-lg">
-            <Activity className="h-5 w-5 text-electric" /> TRADER AI
+            <Activity className="h-5 w-5 text-electric" /> Signal AI
           </div>
           <nav aria-label="Footer" className="flex flex-wrap gap-6 text-sm text-muted-foreground">
             <a href="#dashboard">Analysis</a>
@@ -36,7 +36,7 @@ export function Footer() {
           </nav>
         </div>
         <p className="mt-10 text-xs text-muted-foreground">
-          © 2026 TRADER AI. Educational research tools. Quotes may be delayed; projections are
+          © 2026 Signal AI. Educational research tools. Quotes may be delayed; projections are
           illustrative. Holdings are stored locally in this browser. Chat messages are sent to the
           configured AI provider to generate responses.
         </p>

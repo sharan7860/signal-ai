@@ -105,7 +105,7 @@ export function Hero() {
               Start Analyzing
             </MagneticButton>
             <MagneticButton
-              onClick={() => window.dispatchEvent(new Event("open-trader-chat"))}
+              onClick={() => window.dispatchEvent(new Event("open-signal-chat"))}
               variant="ghost"
               icon={<Activity className="h-4 w-4 text-electric" />}
             >

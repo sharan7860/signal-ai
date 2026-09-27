@@ -6,11 +6,11 @@ import TypingIndicator from "./TypingIndicator";
 import { JarvisAssistant } from "./JarvisAssistant";
 import { fetchAIResponse, type ChatMessageType } from "@/services/aiService";
 
-const STORAGE_KEY = "trader-ai-assistant-messages";
+const STORAGE_KEY = "signal-ai-assistant-messages";
 const welcome = (): ChatMessageType => ({
   role: "assistant",
   content:
-    "Welcome to Trader AI. Ask about current market data for a ticker such as AAPL, stock analysis, diversification, or technical indicators.",
+    "Welcome to Signal AI. Ask about current market data for a ticker such as AAPL, stock analysis, diversification, or technical indicators.",
   timestamp: new Date().toISOString(),
 });
 
@@ -72,8 +72,8 @@ export function AIChatbot() {
 
   useEffect(() => {
     const open = () => setIsOpen(true);
-    window.addEventListener("open-trader-chat", open);
-    return () => window.removeEventListener("open-trader-chat", open);
+    window.addEventListener("open-signal-chat", open);
+    return () => window.removeEventListener("open-signal-chat", open);
   }, []);
 
   const handleSend = useCallback(async (value: string) => {
@@ -131,7 +131,7 @@ export function AIChatbot() {
           >
             <div className="flex items-center justify-between border-b border-cyan-300/15 px-5 py-4">
               <div>
-                <p className="text-xs uppercase tracking-widest text-cyan-300">Trader AI</p>
+                <p className="text-xs uppercase tracking-widest text-cyan-300">Signal AI</p>
                 <h2 className="mt-1 text-lg font-semibold text-white">Market Copilot</h2>
               </div>
               <button

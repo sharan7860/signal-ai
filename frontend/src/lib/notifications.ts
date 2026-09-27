@@ -1,5 +1,5 @@
 /**
- * Minimal notification sound system for TRADER AI.
+ * Minimal notification sound system for Signal AI.
  * Uses a synthesized frequency to avoid external dependency on audio files.
  */
 export const playNotificationSound = () => {
@@ -32,6 +32,6 @@ export const playNotificationSound = () => {
  * Event-based notification bridge to sync Insights -> Navbar
  */
 export const notifyNewSignal = (signal: { id: string; title: string; symbol: string }) => {
-  const event = new CustomEvent("trader_ai_new_signal", { detail: signal });
+  const event = new CustomEvent("signal_ai_new_signal", { detail: signal });
   window.dispatchEvent(event);
 };

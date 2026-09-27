@@ -28,7 +28,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           }`}
         >
           <div className="mb-2 flex items-center justify-between gap-3 text-[0.75rem] uppercase tracking-[0.24em] text-cyan-300/80">
-            <span>{isUser ? "You" : "Trader AI"}</span>
+            <span>{isUser ? "You" : "Signal AI"}</span>
             <span className="text-cyan-100/60">
               {new Date(message.timestamp).toLocaleTimeString([], {
                 hour: "2-digit",
