@@ -1,4 +1,12 @@
 {
+  "auth": {
+    "authorizedDomains": [
+      "localhost",
+      "signal-ai-aafc9.firebaseapp.com",
+      "signal-ai-aafc9.web.app",
+      "sharan7860.github.io"
+    ]
+  },
   "hosting": {
     "public": "frontend/dist",
     "ignore": [
