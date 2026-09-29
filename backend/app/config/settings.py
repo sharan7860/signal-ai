@@ -21,6 +21,7 @@ class Settings(BaseSettings):
 
     # CORS Configuration
     CORS_ORIGINS: List[str] = ["http://localhost:8080", "http://localhost:3000", "http://127.0.0.1:8080"]
+    CORS_ORIGIN_REGEX: str = r"https://[a-z0-9-]+\.vercel\.app"
     CORS_ALLOW_CREDENTIALS: bool = True
     CORS_ALLOW_METHODS: List[str] = ["*"]
     CORS_ALLOW_HEADERS: List[str] = ["*"]
