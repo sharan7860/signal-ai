@@ -66,6 +66,18 @@ export function getWatchlist(signal?: AbortSignal) {
 }
 
 export function getStockNews(symbol: string, signal?: AbortSignal) {
+  const isVercel = typeof window !== "undefined" && window.location.hostname.endsWith(".vercel.app");
+  if (isVercel) {
+    return fetch(`/api/news?symbol=${encodeURIComponent(symbol)}`, { signal }).then(async (response) => {
+      if (!response.ok) throw new Error(`Market news request failed (${response.status})`);
+      return response.json() as Promise<{
+        symbol: string;
+        items: NewsArticle[];
+        timestamp: string;
+        refresh_after_seconds: number;
+      }>;
+    });
+  }
   return apiRequest<{ symbol: string; items: NewsArticle[]; timestamp: string; refresh_after_seconds: number }>(
     `/stocks/news/${encodeURIComponent(symbol)}`,
     { signal },
