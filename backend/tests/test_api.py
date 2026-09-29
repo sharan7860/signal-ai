@@ -87,6 +87,28 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(item["publisher"], "Fixture News")
         self.assertEqual(item["symbol"], "AAPL")
 
+    async def test_stock_news_falls_back_to_yahoo_search(self):
+        ticker = Mock()
+        ticker.news = []
+        fallback = Mock()
+        fallback.raise_for_status.return_value = None
+        fallback.json.return_value = {"news": [{
+            "uuid": "fallback-news",
+            "title": "Fallback headline",
+            "publisher": "Yahoo Finance",
+            "link": "https://example.com/fallback",
+            "providerPublishTime": 1735787045,
+        }]}
+        with patch("app.services.stock_service.yf.Ticker", return_value=ticker), patch(
+            "app.services.stock_service.requests.get", return_value=fallback
+        ) as get:
+            _stock_news.cache_clear()
+            response = await self.client.get("/api/stocks/news/AAPL")
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()["items"][0]["title"], "Fallback headline")
+        self.assertEqual(response.json()["items"][0]["publisher"], "Yahoo Finance")
+        self.assertEqual(get.call_args.kwargs["params"]["q"], "AAPL")
+
     async def test_compare_json_serialization(self):
         response = await self.client.get("/api/stocks/compare/AAPL,MSFT")
         self.assertEqual(response.status_code, 200, response.text)

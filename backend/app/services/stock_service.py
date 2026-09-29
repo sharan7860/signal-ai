@@ -1,4 +1,5 @@
 """Fetch market data once per cache window and return JSON-safe values."""
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from functools import lru_cache
 import logging
@@ -6,11 +7,20 @@ import math
 import time
 
 import pandas as pd
+import requests
 import yfinance as yf
 
 from app.config import settings
 
 logger = logging.getLogger(__name__)
+YAHOO_NEWS_SEARCH_URL = "https://query2.finance.yahoo.com/v1/finance/search"
+YAHOO_NEWS_HEADERS = {
+    "Accept": "application/json",
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+    ),
+}
 
 
 def finite(value):
@@ -38,15 +48,30 @@ def _market_data(symbol, period, interval, cache_window):
     return history, info
 
 
-@lru_cache(maxsize=128)
-def _stock_news(symbol, cache_window):
-    """Read provider headlines once per configured cache interval."""
-    articles = yf.Ticker(symbol).news or []
+def _mapping(value):
+    return value if isinstance(value, Mapping) else {}
+
+
+def _provider_headlines(symbol):
+    """Use Yahoo's search endpoint when yfinance's ticker-news endpoint is unavailable."""
+    response = requests.get(
+        YAHOO_NEWS_SEARCH_URL,
+        params={"q": symbol, "newsCount": 10, "quotesCount": 0},
+        headers=YAHOO_NEWS_HEADERS,
+        timeout=15,
+    )
+    response.raise_for_status()
+    articles = response.json().get("news", [])
+    return articles if isinstance(articles, list) else []
+
+
+def _format_headlines(articles, symbol):
     formatted = []
     for item in articles:
-        content = item.get("content") or {}
-        provider = content.get("provider") or item.get("provider") or {}
-        canonical = content.get("canonicalUrl") or content.get("clickThroughUrl") or {}
+        item = _mapping(item)
+        content = _mapping(item.get("content"))
+        provider = _mapping(content.get("provider") or item.get("provider"))
+        canonical = _mapping(content.get("canonicalUrl") or content.get("clickThroughUrl"))
         title = content.get("title") or item.get("title")
         if not title:
             continue
@@ -59,7 +84,26 @@ def _stock_news(symbol, cache_window):
             "summary": content.get("summary") or item.get("summary") or "",
             "symbol": symbol,
         })
-    return tuple(formatted)
+    return formatted
+
+
+@lru_cache(maxsize=128)
+def _stock_news(symbol, cache_window):
+    """Read provider headlines once per configured cache interval."""
+    try:
+        articles = yf.Ticker(symbol).news or []
+    except Exception:
+        logger.warning("yfinance ticker-news request failed for %s", symbol, exc_info=True)
+        articles = []
+
+    if not articles:
+        try:
+            articles = _provider_headlines(symbol)
+        except requests.RequestException:
+            logger.warning("Yahoo news fallback failed for %s", symbol, exc_info=True)
+            return ()
+
+    return tuple(_format_headlines(articles, symbol))
 
 
 class StockService:
