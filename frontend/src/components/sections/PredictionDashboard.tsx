@@ -81,12 +81,12 @@ export function PredictionDashboard() {
   ];
   return (
     <section id="dashboard" className="relative scroll-mt-24 py-24">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-10 max-w-2xl">
           <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-widest text-electric">
             <Brain className="h-4 w-4" /> Market analysis
           </div>
-          <h2 className="font-display text-4xl font-semibold md:text-5xl">
+          <h2 className="font-display text-3xl font-semibold sm:text-4xl md:text-5xl">
             Explore a stock. <span className="text-gradient">Understand its signals.</span>
           </h2>
           <p className="mt-4 text-muted-foreground">
@@ -95,7 +95,7 @@ export function PredictionDashboard() {
           </p>
         </div>
         <div className="glass-card rounded-3xl p-5 md:p-8">
-          <div className="flex flex-wrap items-start gap-4">
+          <div className="flex flex-wrap items-start gap-3 sm:gap-4">
             <SymbolSearch key={symbol} symbol={symbol} onSelect={selectSymbol} />
             <button
               onClick={refresh}

@@ -37,17 +37,17 @@ const features = [
 
 export function Features() {
   return (
-    <section className="relative py-24">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="relative py-20 sm:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
+          className="mb-12 text-center sm:mb-16"
         >
           <div className="mb-3 text-xs uppercase tracking-widest text-electric">Capabilities</div>
-          <h2 className="mx-auto max-w-3xl font-display text-4xl font-semibold tracking-tight md:text-5xl">
+          <h2 className="mx-auto max-w-3xl font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
             Built for the <span className="text-gradient">AI-first investor</span>
           </h2>
         </motion.div>
@@ -64,7 +64,7 @@ export function Features() {
                 transition={{ duration: 0.6, delay: i * 0.07 }}
                 className="group"
               >
-                <TiltCard className="h-full p-7">
+                <TiltCard className="h-full p-5 sm:p-7">
                   <div
                     className="grid h-12 w-12 place-items-center rounded-2xl"
                     style={{ background: "var(--gradient-electric)" }}

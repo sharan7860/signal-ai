@@ -21,14 +21,14 @@ export function Insights() {
   });
   return (
     <section id="insights" className="scroll-mt-24 py-20">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <p className="mb-3 text-xs uppercase tracking-widest text-electric">
           Stock insights · {symbol}
         </p>
-        <h2 className="font-display text-4xl font-semibold">
+        <h2 className="font-display text-3xl font-semibold sm:text-4xl">
           A clear view of <span className="text-gradient">the latest signals.</span>
         </h2>
-        <div className="glass-card mt-10 rounded-3xl p-7">
+        <div className="glass-card mt-10 rounded-3xl p-5 sm:p-7">
           {isPending ? (
             <p>Preparing the analysis…</p>
           ) : error || !data ? (
@@ -56,7 +56,7 @@ export function Insights() {
             </>
           )}
         </div>
-        <div className="glass-card mt-6 rounded-3xl p-7">
+        <div className="glass-card mt-6 rounded-3xl p-5 sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h3 className="text-xl font-semibold">Latest market news</h3>

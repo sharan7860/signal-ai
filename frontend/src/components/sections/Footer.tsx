@@ -3,10 +3,10 @@ import { MagneticButton } from "../MagneticButton";
 
 export function Footer() {
   return (
-    <footer className="border-t border-glass-border py-16">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="glass-card mb-12 rounded-3xl p-10 text-center">
-          <h3 className="font-display text-3xl font-semibold">
+    <footer className="border-t border-glass-border py-12 sm:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="glass-card mb-10 rounded-3xl p-5 text-center sm:mb-12 sm:p-10">
+          <h3 className="font-display text-2xl font-semibold sm:text-3xl">
             Start with a ticker. <span className="text-gradient">Explore the evidence.</span>
           </h3>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
@@ -23,11 +23,11 @@ export function Footer() {
             </MagneticButton>
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-8">
+        <div className="flex flex-col gap-6 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-8">
           <div className="flex items-center gap-2 font-display text-lg">
             <Activity className="h-5 w-5 text-electric" /> Signal AI
           </div>
-          <nav aria-label="Footer" className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-3 text-sm text-muted-foreground">
             <a href="#dashboard">Analysis</a>
             <a href="#analytics">Indicators</a>
             <a href="#insights">Insights</a>

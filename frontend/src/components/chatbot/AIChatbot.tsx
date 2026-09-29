@@ -119,7 +119,7 @@ export function AIChatbot() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 sm:bottom-8 sm:right-8">
+    <div className="fixed inset-x-3 bottom-3 z-50 flex flex-col items-end gap-3 sm:inset-x-auto sm:bottom-8 sm:right-8">
       <AnimatePresence>
         {isOpen && (
           <motion.section
@@ -127,7 +127,7 @@ export function AIChatbot() {
             initial={{ opacity: 0, y: 24, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
-            className="glass-card flex max-h-[calc(100dvh-10rem)] w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-3xl bg-slate-950/95 shadow-2xl backdrop-blur-xl sm:w-[420px]"
+            className="glass-card flex max-h-[calc(100dvh-7rem)] w-full flex-col overflow-hidden rounded-3xl bg-slate-950/95 shadow-2xl backdrop-blur-xl sm:w-[420px]"
           >
             <div className="flex items-center justify-between border-b border-cyan-300/15 px-5 py-4">
               <div>

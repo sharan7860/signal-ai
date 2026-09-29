@@ -14,11 +14,11 @@ export function MarketOverview() {
   });
   return (
     <section className="relative py-20">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <p className="mb-3 text-xs uppercase tracking-widest text-electric">
           Market overview · Quotes may be delayed
         </p>
-        <h2 className="font-display text-4xl font-semibold">Follow the market</h2>
+        <h2 className="font-display text-3xl font-semibold sm:text-4xl">Follow the market</h2>
         {query.isPending && (
           <p role="status" className="mt-6 text-muted-foreground">
             Loading the watchlist…
@@ -32,7 +32,7 @@ export function MarketOverview() {
             </button>
           </div>
         )}
-        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
           {query.data?.stocks.map((stock) => (
             <button
               key={stock.symbol}

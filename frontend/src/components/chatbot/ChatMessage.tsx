@@ -14,20 +14,20 @@ export default function ChatMessage({ message }: ChatMessageProps) {
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`flex max-w-[90%] items-start gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
+        className={`flex max-w-full min-w-0 items-start gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
       >
-        <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950/90 text-cyan-300 shadow-[0_0_22px_rgba(56,189,248,0.32)]">
+        <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-950/90 text-cyan-300 shadow-[0_0_22px_rgba(56,189,248,0.32)]">
           {isUser ? <FaUser className="h-5 w-5" /> : <FaRobot className="h-5 w-5" />}
         </div>
 
         <div
-          className={`rounded-[28px] border border-[rgba(102,252,241,0.18)] p-4 shadow-[0_8px_30px_-16px_rgba(56,189,248,0.65)] ${
+          className={`min-w-0 break-words rounded-[28px] border border-[rgba(102,252,241,0.18)] p-4 shadow-[0_8px_30px_-16px_rgba(56,189,248,0.65)] ${
             isUser
               ? "bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 text-slate-100"
               : "bg-[rgba(10,12,22,0.92)] text-slate-100"
           }`}
         >
-          <div className="mb-2 flex items-center justify-between gap-3 text-[0.75rem] uppercase tracking-[0.24em] text-cyan-300/80">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[0.75rem] uppercase tracking-[0.18em] text-cyan-300/80">
             <span>{isUser ? "You" : "Signal AI"}</span>
             <span className="text-cyan-100/60">
               {new Date(message.timestamp).toLocaleTimeString([], {

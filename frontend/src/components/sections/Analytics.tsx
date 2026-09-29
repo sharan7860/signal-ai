@@ -19,11 +19,11 @@ export function Analytics() {
     : [];
   return (
     <section id="analytics" className="scroll-mt-24 py-20">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <p className="mb-3 text-xs uppercase tracking-widest text-electric">
           Technical analysis · {symbol}
         </p>
-        <h2 className="font-display text-4xl font-semibold">
+        <h2 className="font-display text-3xl font-semibold sm:text-4xl">
           The numbers behind <span className="text-gradient">the signal.</span>
         </h2>
         {isPending && <p className="mt-6 text-muted-foreground">Loading indicators…</p>}

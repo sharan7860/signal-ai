@@ -114,9 +114,9 @@ export function Portfolio() {
 
   return (
     <section id="portfolio" className="scroll-mt-24 py-20">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <p className="mb-3 text-xs uppercase tracking-widest text-electric">Portfolio tracker</p>
-        <h2 className="font-display text-4xl font-semibold">
+        <h2 className="font-display text-3xl font-semibold sm:text-4xl">
           Your holdings. <span className="text-gradient">Current valuations.</span>
         </h2>
         <p className="mt-4 text-muted-foreground">
@@ -125,9 +125,9 @@ export function Portfolio() {
         </p>
         <form
           onSubmit={addHolding}
-          className="glass-card mt-8 flex flex-wrap items-end gap-4 rounded-2xl p-6"
+          className="glass-card mt-8 flex flex-col gap-4 rounded-2xl p-4 sm:flex-row sm:flex-wrap sm:items-end sm:p-6"
         >
-          <label className="flex min-w-0 flex-1 flex-col gap-2 text-sm">
+          <label className="flex w-full min-w-0 flex-1 flex-col gap-2 text-sm">
             Portfolio ticker
             <input
               value={symbol}
@@ -138,7 +138,7 @@ export function Portfolio() {
               className="min-w-0 rounded-xl border border-glass-border bg-background p-3"
             />
           </label>
-          <label className="flex min-w-0 flex-1 flex-col gap-2 text-sm">
+          <label className="flex w-full min-w-0 flex-1 flex-col gap-2 text-sm">
             Shares
             <input
               value={shares}
@@ -154,7 +154,7 @@ export function Portfolio() {
           <button
             type="submit"
             disabled={saving || !ready}
-            className="rounded-full bg-electric/15 px-6 py-3 text-electric disabled:opacity-50"
+            className="w-full rounded-full bg-electric/15 px-6 py-3 text-electric disabled:opacity-50 sm:w-auto"
           >
             {saving ? "Checking ticker…" : "Save holding"}
           </button>
