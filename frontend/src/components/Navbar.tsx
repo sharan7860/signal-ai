@@ -1,7 +1,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Activity, Menu, X } from "lucide-react";
+import { Activity, LogIn, LogOut, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MagneticButton } from "./MagneticButton";
+import { useAuth } from "@/hooks/useAuth";
 
 const links = [
   { label: "Predictions", id: "dashboard" },
@@ -12,6 +13,7 @@ const links = [
 ];
 
 export function Navbar() {
+  const { user, loading, loginWithGoogle, logout } = useAuth();
   const { scrollY } = useScroll();
   const blur = useTransform(scrollY, [0, 100], [10, 28]);
   const bg = useTransform(
@@ -112,6 +114,37 @@ export function Navbar() {
           >
             Ask AI
           </button>
+          {!loading && !user && (
+            <button
+              type="button"
+              onClick={() => void loginWithGoogle()}
+              className="hidden items-center gap-2 rounded-full border border-glass-border px-3 py-2 text-xs text-foreground transition-colors hover:border-electric/60 hover:text-electric md:inline-flex"
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              Sign in
+            </button>
+          )}
+          {!loading && user && (
+            <button
+              type="button"
+              onClick={() => void logout()}
+              aria-label="Sign out"
+              title="Sign out"
+              className="hidden items-center gap-2 rounded-full border border-glass-border px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:border-electric/60 hover:text-electric md:inline-flex"
+            >
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                  className="h-6 w-6 rounded-full border border-electric/30"
+                />
+              ) : (
+                <LogOut className="h-4 w-4" />
+              )}
+              <span className="hidden lg:inline">Sign out</span>
+            </button>
+          )}
           <MagneticButton
             onClick={() =>
               document.getElementById("dashboard")?.scrollIntoView({ behavior: "smooth" })
@@ -146,6 +179,32 @@ export function Navbar() {
             >
               Ask AI
             </button>
+            {!loading && !user && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  void loginWithGoogle();
+                }}
+                className="flex items-center gap-2 rounded-xl px-4 py-3 text-left text-sm text-foreground hover:bg-electric/10"
+              >
+                <LogIn className="h-4 w-4 text-electric" />
+                Sign in with Google
+              </button>
+            )}
+            {!loading && user && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  void logout();
+                }}
+                className="flex items-center gap-2 rounded-xl px-4 py-3 text-left text-sm text-foreground hover:bg-electric/10"
+              >
+                <LogOut className="h-4 w-4 text-electric" />
+                Sign out {user.displayName ? `(${user.displayName})` : ""}
+              </button>
+            )}
           </div>
         </nav>
       )}
